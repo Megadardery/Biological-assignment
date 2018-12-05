@@ -1,9 +1,10 @@
 #ifndef _DNA_H
 #define _DNA_H
-#include "NucleicAcid.h"
+#include "Sequence.h"
+#include <iosfwd>
 
 class RNA;
-class DNA : public NucleicAcid
+class DNA : public Sequence
 {
 public:
 	DNA();
@@ -18,10 +19,16 @@ public:
 	DNAType getType() const;
 	std::string getTypeName() const;	//uses current value of DNAType and returns name in english
 
-	RNA toRNA(bool fromMainStrand = true, RNAType _type = RNA_UNKNOWN) const;
+	RNA toRNA(bool fromMainStrand = true, RNAType _type = RNA_UNKNOWN, int s = -1, int e = -1) const;
 
 	bool LoadSequenceFromFile(char* filename);
 	bool SaveSequenceToFile(char* filename) const;
+ 
+	DNA operator +(const DNA& other) const;
+	bool operator ==(const DNA& other) const;
+	bool operator !=(const DNA& other) const;
+	friend std::ostream& operator <<(std::ostream& out, const DNA& obj);
+	friend std::istream& operator >>(std::istream& in, DNA& obj);
 
 	std::string alignWith(const DNA& other) const;
 	virtual ~DNA();
