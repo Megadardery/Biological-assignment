@@ -21,12 +21,12 @@ enum ProteinType {
 	CELLULAR_FUNCTION,
 	Protein_UNKNOWN = -1
 };
-class NucleicAcid
+class Sequence
 {
 public:
-	NucleicAcid();
-	NucleicAcid(const std::string& _strand);
-	NucleicAcid(const NucleicAcid& cpy);
+	Sequence();
+	Sequence(const std::string& _strand);
+	Sequence(const Sequence& cpy);
 
 	std::string getStrand() const;
 	virtual void setStrand(std::string _strand);
@@ -36,7 +36,7 @@ public:
 	virtual bool LoadSequenceFromFile(char* filename) = 0;
 	virtual bool SaveSequenceToFile(char* filename) const = 0;
 
-	virtual ~NucleicAcid();
+	virtual ~Sequence();
 protected:
 	std::string strand;
 };
