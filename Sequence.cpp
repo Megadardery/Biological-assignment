@@ -20,10 +20,12 @@ void Sequence::setStrand(std::string _strand)
 {
 	strand = _strand;
 }
-/*std :: string match(std :: string strand1, std :: string strand2)
+std::string Sequence::alignWith(const Sequence & other) const
 {
-	// @TODO complete function
-}*/
+	//Notice: this function uses polymorphism
+	//TODO be implemented
+	return std::string();
+}
 Sequence :: ~Sequence()
 {
 

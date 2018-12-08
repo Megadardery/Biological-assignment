@@ -3,11 +3,11 @@
 #include <fstream>
 DNA::DNA()
 {
-	type = DNA_UNKNOWN;
+	type = DNA_Unknown;
 }
 DNA::DNA(const std::string& _strand, DNAType _type)
 {
-	strand = _strand;
+	setStrand(_strand);
 	type = _type;
 	generate_strand2();
 }
@@ -23,11 +23,21 @@ std::string DNA::getStrand2() const
 }
 void DNA::setStrand(std::string _strand)
 {
+	for (int i = 0; i < (int)_strand.size(); ++i)
+	{
+		if (_strand[i] != 'A' && _strand[i] != 'T' && _strand[i] != 'G' && _strand[i] != 'C')
+			throw std::invalid_argument("Invalid character for DNA encountered");
+	}
 	strand = _strand;
 	generate_strand2();
 }
 void DNA::setStrand2(std::string _strand2)
 {
+	for (int i = 0; i < (int)_strand2.size(); ++i)
+	{
+		if (_strand2[i] != 'A' && _strand2[i] != 'T' && _strand2[i] != 'G' && _strand2[i] != 'C')
+			throw std::invalid_argument("Invalid character for DNA encountered");
+	}
 	strand2 = _strand2;
 	generate_strand1();
 }
@@ -45,32 +55,20 @@ std::string DNA::getTypeName() const
 }
 bool DNA::LoadSequenceFromFile(char* filename)
 {
-	std::string tmp1, tmp2;
 	std::fstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
-	getline(file, tmp1);
-	getline(file, tmp2);
-	for (int i = 0; i < (int)tmp1.size(); ++i)
-	{
-		if (tmp1[i] != 'A' || tmp1[i] != 'T' || tmp1[i] != 'G' || tmp1[i] != 'C') return 0;
-	}
-	for (int i = 0; i < (int)tmp2.size(); ++i)
-	{
-		if (tmp2[i] != 'A' || tmp2[i] != 'T' || tmp2[i] != 'G' || tmp2[i] != 'C') return 0;
-	}
-	strand = tmp1;
-	for (int i = 0; i < (int)tmp2.size(); ++i) strand2[i] = tmp2[tmp2.size() - i - 1];
+	operator>>(file, *this);
+	file.close();
 	return 1;
 }
 bool DNA::SaveSequenceToFile(char* filename) const
 {
-	std::string tmp2 = strand2;
-	for (int i = 0; i < (int)tmp2.size(); ++i) tmp2[i] = strand2[tmp2.size() - i - 1];
 	std::fstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
-	file << strand << "\n" << tmp2 << "\n";
+	operator<<(file, *this);
+	file.close();
 	return 1;
 }
 DNA DNA::operator+(const DNA & other) const
@@ -79,89 +77,65 @@ DNA DNA::operator+(const DNA & other) const
 }
 bool DNA::operator==(const DNA & other) const
 {
-	// @TODO: implement
-	return 0;
+	return strand == other.strand && type == other.type;
 }
 bool DNA::operator!=(const DNA & other) const
 {
-	// @TODO: implement
-	return 0;
+	return !(*this == other);
+}
+void DNA::generate_strand_util(std::string& src, std::string& des) {
+	des.resize(src.size());
+	int s = 0;
+	int e = src.size() - 1;
+	for (int i = s; i <= e; ++i)
+	{
+		switch (src[i])
+		{
+		case 'A':
+			des[e - i] = 'T';
+			break;
+		case 'T':
+			des[e - i] = 'A';
+			break;
+		case 'C':
+			des[e - i] = 'G';
+			break;
+		case 'G':
+			des[e - i] = 'C';
+			break;
+		default:
+			des[e - i] = src[e - i];
+		}
+	}
 }
 void DNA::generate_strand1()
 {
-	strand.resize(strand2.size());
-	int s = 0;
-	int e = strand2.size() - 1;
-	for (int i = s; i <= e; ++i)
-	{
-		switch (strand2[i])
-		{
-		case 'A':
-			strand[i] = 'T';
-			break;
-		case 'T':
-			strand[i] = 'A';
-			break;
-		case 'C':
-			strand[i] = 'G';
-			break;
-		case 'G':
-			strand[i] = 'C';
-			break;
-		default:
-			continue;
-		}
-	}
+	generate_strand_util(strand2, strand);
 }
 void DNA::generate_strand2()
 {
-	strand2.resize(strand.size());
-	strand2.resize(strand.size());
-	int s = 0;
-	int e = strand2.size() - 1;
-	for (int i = s; i <= e; ++i)
-	{
-		switch (strand[i])
-		{
-		case 'A':
-			strand2[i] = 'T';
-			break;
-		case 'T':
-			strand2[i] = 'A';
-			break;
-		case 'C':
-			strand2[i] = 'G';
-			break;
-		case 'G':
-			strand2[i] = 'C';
-			break;
-		default:
-			continue;
-		}
-	}
+	generate_strand_util(strand, strand2);
 }
 RNA DNA::toRNA(bool fromMainStrand, RNAType _type, int s, int e) const
 {
-	std::string converted_strand;
-	std::string curr_strand = strand2;
 	if (s == -1) s++;
 	if (e == -1) e = strand2.size() - 1;
 	if (!(s >= 0 && s <= e && e < (int)strand2.size()))
 	{
-		//@TODO :: throw exception
+		throw std::out_of_range("s and e out of range.");
 	}
-	if (fromMainStrand) curr_strand = strand;
-	converted_strand = curr_strand;
+	
+	std::string converted;
+	if (fromMainStrand)
+		converted = strand.substr(s, e - s + 1);
+	else
+		converted = strand2.substr(s, e - s + 1);
+
 	for (int i = s; i <= e; ++i)
 	{
-		if (curr_strand[i] == 'T') converted_strand[i] = 'U';
+		if (converted[i] == 'T') converted[i] = 'U';
 	}
-	return RNA(converted_strand, _type);
-}
-std::string DNA::alignWith(const DNA & other) const
-{
-	// @TODO: implement
-	return std::string();
+	return RNA(converted, _type);
 }
 DNA :: ~DNA()
 {
@@ -170,12 +144,27 @@ DNA :: ~DNA()
 
 std::ostream & operator<<(std::ostream & out, const DNA & obj)
 {
-	// @TODO: implement
+	out << obj.getTypeName() << '\n' << obj.strand << '\n' << obj.strand2 << '\n';
 	return out;
 }
-
 std::istream & operator>>(std::istream & in, DNA & obj)
 {
-	// @TODO: implement
+	std::string typeName;
+	getline(in, typeName);
+	//make input lowercase
+	for (int i = 0; i < (int)typeName.size(); i++) {
+		if (typeName[i] >= 'A' && typeName[i] <= 'Z')
+			typeName[i] += 0x20;
+	}
+
+	if (typeName == "promoter") obj.type = Promoter;
+	else if (typeName == "motif") obj.type = Motif;
+	else if (typeName == "tail") obj.type = Tail;
+	else if (typeName == "noncoding") obj.type = Noncoding;
+	else obj.type = DNA_Unknown;
+
+	std::string tmp;
+	getline(in, tmp);
+	obj.setStrand(tmp);
 	return in;
 }

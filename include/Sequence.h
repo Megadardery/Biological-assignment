@@ -1,25 +1,26 @@
-#ifndef _NUCLEIC_ACID_H
-#define _NUCLEIC_ACID_H
+#ifndef _SEQUENCE_H
+#define _SEQUENCE_H
 #include <string>
 enum DNAType {
-	PROMOTER,
-	MOTIF,
-	TAIL,
-	NONCODING,
-	DNA_UNKNOWN = -1
+	Promoter,
+	Motif,
+	Tail,
+	Noncoding,
+	DNA_Unknown = -1
 };
 enum RNAType {
 	mRNA,
-	tRNA,
-	rRNA,
-	RNA_UNKNOWN = -1
+	pre_mRNA,
+	mRNA_exon,
+	mRNA_intron,
+	RNA_Unknown = -1
 };
 enum ProteinType {
-	HORMON,
-	ENZYME,
+	Hormon,
+	Enzyme,
 	TF,
-	CELLULAR_FUNCTION,
-	Protein_UNKNOWN = -1
+	Cellular_Function,
+	Protein_Unknown = -1
 };
 class Sequence
 {
@@ -28,13 +29,15 @@ public:
 	Sequence(const std::string& _strand);
 	Sequence(const Sequence& cpy);
 
-	std::string getStrand() const;
+	virtual std::string getStrand() const;
 	virtual void setStrand(std::string _strand);
 
 	virtual std::string getTypeName() const = 0;		//returns type name, ex. promoter DNA, rRNA, etc.
 
 	virtual bool LoadSequenceFromFile(char* filename) = 0;
 	virtual bool SaveSequenceToFile(char* filename) const = 0;
+
+	std::string alignWith(const Sequence& other) const;
 
 	virtual ~Sequence();
 protected:

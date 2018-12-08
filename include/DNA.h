@@ -8,7 +8,7 @@ class DNA : public Sequence
 {
 public:
 	DNA();
-	DNA(const std::string& _strand, DNAType _type = DNA_UNKNOWN);
+	DNA(const std::string& _strand, DNAType _type = DNA_Unknown);
 	DNA(const DNA& cpy);
 
 	std::string getStrand2() const;
@@ -19,7 +19,7 @@ public:
 	DNAType getType() const;
 	std::string getTypeName() const;	//uses current value of DNAType and returns name in english
 
-	RNA toRNA(bool fromMainStrand = true, RNAType _type = RNA_UNKNOWN, int s = -1, int e = -1) const;
+	RNA toRNA(bool fromMainStrand = true, RNAType _type = mRNA, int s = -1, int e = -1) const;
 
 	bool LoadSequenceFromFile(char* filename);
 	bool SaveSequenceToFile(char* filename) const;
@@ -30,12 +30,13 @@ public:
 	friend std::ostream& operator <<(std::ostream& out, const DNA& obj);
 	friend std::istream& operator >>(std::istream& in, DNA& obj);
 
-	std::string alignWith(const DNA& other) const;
 	virtual ~DNA();
 protected:
 	DNAType type;
 	std::string strand2;
 	void generate_strand1();
 	void generate_strand2();
+private:
+	void generate_strand_util(std::string& src, std::string& des);
 };
 #endif

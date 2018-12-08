@@ -1,13 +1,14 @@
 #include "RNA.h"
 #include "DNA.h"
 #include "Protein.h"
+#include <fstream>
 RNA::RNA()
 {
 
 }
 RNA::RNA(const std::string& _strand, RNAType _type)
 {
-	strand = _strand;
+	setStrand(_strand);
 	type = _type;
 }
 RNA::RNA(const RNA& cpy)
@@ -32,12 +33,14 @@ RNAType RNA::getType() const
 std::string RNA::getTypeName() const
 {
 	switch (type) {
-	case rRNA:
-		return "rRNA";
 	case mRNA:
 		return "mRNA";
-	case tRNA:
-		return "tRNA";
+	case mRNA_exon:
+		return "mRNA exon";
+	case mRNA_intron:
+		return "mRNA intron";
+	case pre_mRNA:
+		return "pre mRNA";
 	default:
 		return "Unknown";
 	}
@@ -54,37 +57,46 @@ void RNA::setCodon(int index, const Codon & value)
 	strand[index * 3 + 2] = ret[2];
 
 }
-Protein RNA::toProtein(ProteinType _type) const
+void RNA::setStrand(std::string _strand)
+{
+	for (int i = 0; i < (int)_strand.size(); ++i)
+	{
+		if (_strand[i] != 'A' && _strand[i] != 'U' && _strand[i] != 'G' && _strand[i] != 'C')
+			throw std::invalid_argument("Invalid character for RNA encountered");
+	}
+	strand = _strand;
+}
+Protein RNA::toProtein(ProteinType _type, int s) const
 {
 	std::string ret;
-	char tmp;
-	if (strand.size() % 3)
+	char currAmino;
+	for (int i = s; i < (int)strand.size(); i += 3)
 	{
-		//@TODO :: throw exception
-	}
-	for (int i = 0; i < (int)strand.size(); i += 3)
-	{
-		tmp = Codon(strand[i], strand[i + 1], strand[i + 2]).toAminoAcid();
-		if (!(tmp - '0'))
-		{
-			ret += tmp;
-		}
+		currAmino = Codon(strand[i], strand[i + 1], strand[i + 2]).toAminoAcid();
+		if (currAmino != '*')
+			ret += currAmino;
 		else
-		{
 			return (Protein(ret, _type));
-		}
 	}
 	return (Protein(ret, _type));
 }
-bool RNA::LoadSequenceFromFile(char * filename)
+bool RNA::LoadSequenceFromFile(char* filename)
 {
-	// @TODO: implement
-	return 0;
+	std::fstream file;
+	file.open(filename);
+	if (!file.is_open()) return 0;
+	operator>>(file, *this);
+	file.close();
+	return 1;
 }
-bool RNA::SaveSequenceToFile(char * filename) const
+bool RNA::SaveSequenceToFile(char* filename) const
 {
-	// @TODO: implement
-	return 0;
+	std::fstream file;
+	file.open(filename);
+	if (!file.is_open()) return 0;
+	operator<<(file, *this);
+	file.close();
+	return 1;
 }
 RNA RNA::operator+(const RNA & other) const
 {
@@ -92,18 +104,11 @@ RNA RNA::operator+(const RNA & other) const
 }
 bool RNA::operator==(const RNA & other) const
 {
-	// @TODO: implement
-	return 0;
+	return strand == other.strand && type == other.type;
 }
 bool RNA::operator!=(const RNA & other) const
 {
-	// @TODO: implement
-	return 0;
-}
-std::string RNA::alignWith(const RNA & other) const
-{
-	// @TODO: implement
-	return 0;
+	return !(*this == other);
 }
 RNA :: ~RNA()
 {
@@ -112,12 +117,28 @@ RNA :: ~RNA()
 
 std::ostream & operator<<(std::ostream & out, const RNA & obj)
 {
-	// @TODO: implement
+	out << obj.getTypeName() << '\n' << obj.strand << '\n';
 	return out;
 }
 
 std::istream & operator>>(std::istream & in, RNA & obj)
 {
-	// @TODO: implement
+	std::string typeName;
+	getline(in, typeName);
+	//make input lowercase
+	for (int i = 0; i < (int)typeName.size(); i++) {
+		if (typeName[i] >= 'A' && typeName[i] <= 'Z')
+			typeName[i] += 0x20;
+	}
+
+	if (typeName == "mrna") obj.type = mRNA;
+	else if (typeName == "pre mrna") obj.type = pre_mRNA;
+	else if (typeName == "mrna exon") obj.type = mRNA_exon;
+	else if (typeName == "mrna intron") obj.type = mRNA_intron;
+	else obj.type = RNA_Unknown;
+
+	std::string tmp;
+	getline(in, tmp);
+	obj.setStrand(tmp);
 	return in;
 }

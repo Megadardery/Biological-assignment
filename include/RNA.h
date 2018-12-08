@@ -10,9 +10,9 @@ class RNA : public Sequence
 {
 public:
 	RNA();
-	RNA(const std::string& _strand, RNAType _type = RNA_UNKNOWN);
+	RNA(const std::string& _strand, RNAType _type = RNA_Unknown);
 	RNA(const RNA& cpy);
-	RNA(const DNA& dna, bool fromMainStrand, RNAType _type = RNA_UNKNOWN, int s = -1, int e = -1);
+	RNA(const DNA& dna, bool fromMainStrand, RNAType _type = RNA_Unknown, int s = -1, int e = -1);
 
 	void setType(RNAType _type);
 	RNAType getType() const;
@@ -21,7 +21,9 @@ public:
 	Codon getCodon(int index) const;
 	void setCodon(int index, const Codon& value);
 
-	Protein toProtein(ProteinType _type = Protein_UNKNOWN) const;
+	void setStrand(std::string _strand);
+
+	Protein toProtein(ProteinType _type = Protein_Unknown, int s = 0) const;
 
 	bool LoadSequenceFromFile(char* filename);
 	bool SaveSequenceToFile(char* filename) const;
@@ -32,7 +34,6 @@ public:
 	friend std::ostream& operator <<(std::ostream& out, const RNA& obj);
 	friend std::istream& operator >>(std::istream& in, RNA& obj);
 
-	std::string alignWith(const RNA& other) const;
 	virtual ~RNA();
 protected:
 	RNAType type;

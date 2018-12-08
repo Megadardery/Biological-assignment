@@ -7,8 +7,8 @@ const char Codon::mem[] = { 'K','N','K','N','T','T','T','T',
 				'R','R','R','R','L','L','L','L',
 				'E','D','E','D','A','A','A','A',
 				'G','G','G','G','V','V','V','V',
-				'0','Y','0','Y','S','S','S','S',
-				'0','C','W','C','L','F','L','F' };
+				'*','Y','*','Y','S','S','S','S',
+				'*','C','W','C','L','F','L','F' };
 
 Codon::Codon(char _a, char _b, char _c)
 {

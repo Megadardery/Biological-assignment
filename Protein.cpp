@@ -1,4 +1,6 @@
 #include "Protein.h"
+#include <fstream>
+#include <algorithm>
 Protein::Protein()
 {
 
@@ -24,27 +26,45 @@ ProteinType Protein::getType() const
 std::string Protein::getTypeName() const
 {
 	switch (type) {
-	case HORMON:
+	case Hormon:
 		return "Hormon";
-	case ENZYME:
+	case Enzyme:
 		return "Enzyme";
 	case TF:
 		return "TF";
-	case CELLULAR_FUNCTION:
+	case Cellular_Function:
 		return "Cellular Function";
 	default:
 		return "Unknown";
 	}
 }
-bool Protein::LoadSequenceFromFile(char * filename)
+void Protein::setStrand(std::string _strand)
 {
-	//@TODO: implement
-	return 0;
+	const char allowed[] = "ACDEFGHIKLMNPQRSTVWY";
+	for (int i = 0; i < (int)_strand.size(); ++i)
+	{
+		if (!std::binary_search(allowed, allowed + 21, _strand[i]))
+			throw std::invalid_argument("Invalid character for Protein encountered");
+	}
+	strand = _strand;
 }
-bool Protein::SaveSequenceToFile(char * filename) const
+bool Protein::LoadSequenceFromFile(char* filename)
 {
-	//@TODO: implement
-	return 0;
+	std::fstream file;
+	file.open(filename);
+	if (!file.is_open()) return 0;
+	operator>>(file, *this);
+	file.close();
+	return 1;
+}
+bool Protein::SaveSequenceToFile(char* filename) const
+{
+	std::fstream file;
+	file.open(filename);
+	if (!file.is_open()) return 0;
+	operator<<(file, *this);
+	file.close();
+	return 1;
 }
 Protein Protein::operator+(const Protein & other) const
 {
@@ -52,18 +72,16 @@ Protein Protein::operator+(const Protein & other) const
 }
 bool Protein::operator==(const Protein & other) const
 {
-	//@TODO: implement
-	return 0;
+	return strand == other.strand && type == other.type;
 }
 bool Protein::operator!=(const Protein & other) const
 {
-	//@TODO: implement
-	return 0;
+	return !(*this == other);
 }
-std::string Protein::alignWith(const Protein & other) const
+DNA * Protein::GetDNAsEncodingMe(const DNA & bigDNA)
 {
-	//@TODO: implement
-	return std::string();
+	//@TODO be implemented
+	return nullptr;
 }
 Protein :: ~Protein()
 {
@@ -72,12 +90,28 @@ Protein :: ~Protein()
 
 std::ostream & operator<<(std::ostream & out, const Protein & obj)
 {
-	//@TODO: implement
+	out << obj.getTypeName() << '\n' << obj.strand << '\n';
 	return out;
 }
 
 std::istream & operator>>(std::istream & in, Protein & obj)
 {
-	//@TODO: implement
+	std::string typeName;
+	getline(in, typeName);
+	//make input lowercase
+	for (int i = 0; i < (int)typeName.size(); i++) {
+		if (typeName[i] >= 'A' && typeName[i] <= 'Z')
+			typeName[i] += 0x20;
+	}
+
+	if (typeName == "hormon") obj.type = Hormon;
+	else if (typeName == "enzyme") obj.type = Enzyme;
+	else if (typeName == "tf") obj.type = TF;
+	else if (typeName == "cellular function") obj.type = Cellular_Function;
+	else obj.type = Protein_Unknown;
+
+	std::string tmp;
+	getline(in, tmp);
+	obj.setStrand(tmp);
 	return in;
 }
