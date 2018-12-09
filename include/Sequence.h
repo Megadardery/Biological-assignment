@@ -46,7 +46,7 @@ public:
 protected:
     std::string strand;
 private :
-    const int MAX_ARRAY_SIZE = 2000;
+    const int MAX_ARRAY_SIZE = 2e6;
     int** mem;
     int getLCS (std :: string& s1,std :: string& s2,int i, int j);
     void fillLCS (std :: string& res, std :: string& s1, std :: string& s2,int i, int j);

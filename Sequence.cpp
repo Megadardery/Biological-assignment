@@ -57,15 +57,16 @@ std::string Sequence::alignWith(const Sequence & other)
     std :: string s1 = strand;
     std :: string s2 = other.strand;
     std :: string res;
+
     // create memory
-    int mx = std :: max(s1.size(),s2.size()) + 5;
-    if (mx> MAX_ARRAY_SIZE) throw std::invalid_argument("Strings size is too large for this operation");
-    mem = new int* [mx];
-    for (int i = 0 ; i<mx ; ++i) mem[i] = new int [mx];
+    //int mx = std :: max(s1.size(),s2.size()) + 5;
+    if ((s1.size()*s2.size())> MAX_ARRAY_SIZE) throw std::invalid_argument("Strings size is too large for this operation");
+    mem = new int* [s1.size()+5];
+    for (int i = 0 ; i<(int)(s1.size()+5) ; ++i) mem[i] = new int [s2.size()+5];
     //Initializing memory by -1
-    for (int i = 0 ; i<mx ; ++i)
+    for (int i = 0 ; i<s1.size()+5 ; ++i)
     {
-        for (int j = 0 ; j<mx ; ++j)
+        for (int j = 0 ; j<s2.size()+5 ; ++j)
         {
             mem[i][j] = -1;
         }
@@ -74,7 +75,7 @@ std::string Sequence::alignWith(const Sequence & other)
     fillLCS(res,s1,s2,s1.size()-1,s2.size()-1);
 
     // releasing memory
-    for (int i = 0 ; i<mx ; ++i) delete[] mem[i];
+    for (int i = 0 ; i<s1.size()+5 ; ++i) delete[] mem[i];
     delete[] mem;
     return res;
 }
