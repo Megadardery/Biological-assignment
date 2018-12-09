@@ -1,6 +1,7 @@
 #include "DNA.h"
 #include "RNA.h"
 #include <fstream>
+#include <stdexcept>
 DNA::DNA()
 {
 	type = DNA_Unknown;
@@ -124,7 +125,7 @@ RNA DNA::toRNA(bool fromMainStrand, RNAType _type, int s, int e) const
 	{
 		throw std::out_of_range("s and e out of range.");
 	}
-	
+
 	std::string converted;
 	if (fromMainStrand)
 		converted = strand.substr(s, e - s + 1);

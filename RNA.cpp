@@ -2,6 +2,7 @@
 #include "DNA.h"
 #include "Protein.h"
 #include <fstream>
+#include <stdexcept>
 RNA::RNA()
 {
 

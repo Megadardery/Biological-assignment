@@ -1,6 +1,7 @@
 #include "Protein.h"
 #include <fstream>
 #include <algorithm>
+#include <stdexcept>
 Protein::Protein()
 {
 
