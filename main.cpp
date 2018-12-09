@@ -7,7 +7,8 @@ using namespace std;
 int main() {
     DNA D1("AGCTG");
     DNA D2("AGTG");
-    cout << D1.alignWith(D2) << "\n" << D1.alignWith(D1);
+    cout << D1.alignWith(D2) << "\n" << D1.alignWith(D1) << endl;
+
 	DNA mydna;
 	bool entered = 0;
 	while (!entered) {
