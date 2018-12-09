@@ -15,15 +15,16 @@ public:
 
 	void setStrand(std::string _strand);		//we override this to automatically generate_strand2()
 	void setStrand2(std::string _strand2);		//new function (not overridden) uses generate_strand1()
-	
+
 	DNAType getType() const;
 	std::string getTypeName() const;	//uses current value of DNAType and returns name in english
 
 	RNA toRNA(bool fromMainStrand = true, RNAType _type = mRNA, int s = -1, int e = -1) const;
 
+
 	bool LoadSequenceFromFile(char* filename);
 	bool SaveSequenceToFile(char* filename) const;
- 
+
 	DNA operator +(const DNA& other) const;
 	bool operator ==(const DNA& other) const;
 	bool operator !=(const DNA& other) const;

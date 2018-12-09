@@ -2,7 +2,9 @@
 #define _PROTEIN_H
 #include "Sequence.h"
 #include <iosfwd>
+#include <vector>
 class DNA;
+class RNA;
 class Protein : public Sequence
 {
 public:
@@ -25,7 +27,7 @@ public:
 	friend std::ostream& operator <<(std::ostream& out, const Protein& obj);
 	friend std::istream& operator >>(std::istream& in, Protein& obj);
 
-	DNA* GetDNAsEncodingMe(const DNA & bigDNA);
+	std :: vector <DNA> GetDNAsEncodingMe(const DNA & bigDNA) const;
 
 	virtual ~Protein();
 protected:

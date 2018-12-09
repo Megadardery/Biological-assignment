@@ -1,4 +1,6 @@
 #include "Protein.h"
+#include "DNA.h"
+#include "RNA.h"
 #include <fstream>
 #include <algorithm>
 #include <stdexcept>
@@ -79,10 +81,22 @@ bool Protein::operator!=(const Protein & other) const
 {
 	return !(*this == other);
 }
-DNA * Protein::GetDNAsEncodingMe(const DNA & bigDNA)
+std :: vector <DNA> Protein::GetDNAsEncodingMe(const DNA & bigDNA) const
 {
-	//@TODO be implemented
-	return nullptr;
+    std :: vector <DNA> ret;
+	std :: string DNAstrand = bigDNA.getStrand();
+	int DNAsiz = DNAstrand.size();
+	int Psiz = strand.size();
+	for (int i = 0 ; i <(DNAsiz - Psiz + 1) ; ++i)
+    {
+
+        Protein tmp = ((bigDNA.toRNA(1,RNA_Unknown,i,i+Psiz-1)).toProtein(type,0));
+        if (tmp == *this)
+        {
+           ret.push_back(DNA(DNAstrand.substr(i,Psiz-1)));
+        }
+    }
+	return ret;
 }
 Protein :: ~Protein()
 {
