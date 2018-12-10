@@ -21,7 +21,6 @@ public:
 	void setSequence(char _a, char _b, char _c);
 	virtual ~Codon();
 
-	static Codon* getPossibleCodons(char aminoAcid);
 protected:
 	char a, b, c;
 	static const char mem[64];
