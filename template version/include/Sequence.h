@@ -45,8 +45,8 @@ public:
 
 	const T* alignWith(const Sequence<T>& other);
 
-	template<typename T>
-	friend T* alignSequences(const Sequence<T>& a, const Sequence<T>& b);
+	template<typename U>
+	friend T* alignSequences(const Sequence<U>& a, const Sequence<U>& b);
 	virtual ~Sequence();
 protected:
 	int length;

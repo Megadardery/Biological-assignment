@@ -2,6 +2,7 @@
 #include <cstring>
 #include <algorithm>
 #include <stdexcept>
+#include <cstring>
 template<typename T>
 Sequence<T>::Sequence(int _length) {
 	length = _length;

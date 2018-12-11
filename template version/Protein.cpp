@@ -5,6 +5,7 @@
 #include <fstream>
 #include <algorithm>
 #include <stdexcept>
+#include <cstring>
 template<typename T>
 Protein<T>::Protein(int _length) : Sequence<T>(_length) { }
 

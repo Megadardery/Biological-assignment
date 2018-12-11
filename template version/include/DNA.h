@@ -31,12 +31,11 @@ public:
 	DNA<T> operator +(const DNA<T>& other) const;
 	bool operator ==(const DNA<T>& other) const;
 	bool operator !=(const DNA<T>& other) const;
-	template<typename T>
-	friend std::ostream& operator <<(std::ostream& out, const DNA<T>& obj);
-	template<typename T>
-	friend std::istream& operator >>(std::istream& in, DNA<T>& obj);
+	template<typename U>
+	friend std::ostream& operator <<(std::ostream& out, const DNA<U>& obj);
+	template<typename Z>
+	friend std::istream& operator >>(std::istream& in, DNA<Z>& obj);
 
-    template<typename T>
     T* substrand(int s , int siz);
 	virtual ~DNA();
 protected:

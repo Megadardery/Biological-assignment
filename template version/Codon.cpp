@@ -1,7 +1,7 @@
 #include "Codon.h"
 #include <iostream>
 #include <fstream>
-
+#include <cstring>
 char Codon::mem[] = { 'K','N','K','N','T','T','T','T',
 				'R','S','R','S','I','I','M','I',
 				'Q','H','Q','H','P','P','P','P',
@@ -76,7 +76,7 @@ bool Codon::loadCodonsFromFile(const char * codonsFileName)
 			if (codon[2] == tmp[i]) l = i;
 		}
 		mem[f * 16 + s * 4 + l] = amino;
-		file >> codon >> amino;	
+		file >> codon >> amino;
 	}
 	return 1;
 }

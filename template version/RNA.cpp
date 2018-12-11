@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
-
+#include <cstring>
 template<typename T>
 RNA<T>::RNA(int _length) : Sequence<T>(_length) { }
 
@@ -64,7 +64,7 @@ Codon RNA<T>::getCodon(int index) const
 template<typename T>
 void RNA<T>::setCodon(int index, const Codon & value)
 {
-	
+
 	this->strand[index * 3] = value.a;
 	this->strand[index * 3 + 1] = value.b;
 	this->strand[index * 3 + 2] = value.c;

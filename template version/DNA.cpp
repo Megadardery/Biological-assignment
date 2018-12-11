@@ -3,6 +3,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <iostream>
+#include <cstring>
 template<typename T>
 DNA<T>::DNA(int _length) : Sequence<T>(_length)
 {
@@ -98,7 +99,7 @@ DNA<T> DNA<T>::operator+(const DNA & other) const
 	int newlength = this->length + other.length;
 	T* temp = new T[newlength];
 
-	memcpy(temp, this->strand, this->length * sizeof T);
+	memcpy(temp,  (this->strand), (this->length * sizeof T));
 	memcpy(temp + this->length, other.strand, other.length * sizeof T);
 
 	DNA ret(temp, newlength);
@@ -161,7 +162,7 @@ template<typename T>
 T* DNA<T> ::  substrand(int s , int siz)
 {
     T* ret = new T [siz];
-    for (int i = 0 ; i<siz ; ++i) ret[i] = strand[s++];
+    for (int i = 0 ; i<siz ; ++i) ret[i] = this->strand[s++];
     return ret;
 }
 template<typename T>
