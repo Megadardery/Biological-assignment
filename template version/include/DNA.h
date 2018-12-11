@@ -36,7 +36,8 @@ public:
 	template<typename T>
 	friend std::istream& operator >>(std::istream& in, DNA<T>& obj);
 
-
+    template<typename T>
+    T* substrand(int s , int siz);
 	virtual ~DNA();
 protected:
 	DNAType type;

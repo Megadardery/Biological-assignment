@@ -158,6 +158,13 @@ void DNA<T>::generate_strand2()
 	generate_strand_util(this->strand, strand2);
 }
 template<typename T>
+T* DNA<T> ::  substrand(int s , int siz)
+{
+    T* ret = new T [siz];
+    for (int i = 0 ; i<siz ; ++i) ret[i] = strand[s++];
+    return ret;
+}
+template<typename T>
 RNA<T> DNA<T>::toRNA(bool fromMainStrand, RNAType _type, int s, int e) const
 {
 	if (s == -1) s++;

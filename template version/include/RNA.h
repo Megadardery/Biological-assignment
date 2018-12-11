@@ -35,7 +35,7 @@ public:
 	RNA<T> operator +(const RNA<T>& other) const;
 	bool operator ==(const RNA<T>& other) const;
 	bool operator !=(const RNA<T>& other) const;
-	template<typename T>
+template<typename T>
 	friend std::ostream& operator <<(std::ostream& out, const RNA<T>& obj);
 	template<typename T>
 	friend std::istream& operator >>(std::istream& in, RNA<T>& obj);

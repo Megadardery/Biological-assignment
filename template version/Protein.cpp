@@ -125,8 +125,7 @@ std::vector <DNA<T>> Protein<T>::GetDNAsEncodingMe(const DNA<T> & bigDNA) const
 	{
 		if (Protein<T>((bigDNA.toRNA(1, RNA_Unknown, i, i + (Psiz + 1) * 3 - 1)).toProtein(type, 0)) == *this)
 		{
-			//@TODO implement substr
-			//ret.push_back(DNA<T>(DNAstrand.substr(i, (Psiz + 1) * 3 - 1)));
+			ret.push_back(DNA<T>(DNAstrand.substrand(i, (Psiz + 1) * 3 - 1)),(Psiz + 1) * 3 - 1),bigDNA.getType());
 		}
 	}
 	return ret;
@@ -134,7 +133,7 @@ std::vector <DNA<T>> Protein<T>::GetDNAsEncodingMe(const DNA<T> & bigDNA) const
 template<typename T>
 Protein<T> :: ~Protein()
 {
-	
+
 }
 
 template<typename T>
