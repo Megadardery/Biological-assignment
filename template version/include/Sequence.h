@@ -1,55 +1,61 @@
 #ifndef _SEQUENCE_H
 #define _SEQUENCE_H
-#include <string>
+#include <vector>
 enum DNAType
 {
-    Promoter,
-    Motif,
-    Tail,
-    Noncoding,
-    DNA_Unknown = -1
+	Promoter,
+	Motif,
+	Tail,
+	Noncoding,
+	DNA_Unknown = -1
 };
 enum RNAType
 {
-    mRNA,
-    pre_mRNA,
-    mRNA_exon,
-    mRNA_intron,
-    RNA_Unknown = -1
+	mRNA,
+	pre_mRNA,
+	mRNA_exon,
+	mRNA_intron,
+	RNA_Unknown = -1
 };
 enum ProteinType
 {
-    Hormon,
-    Enzyme,
-    TF,
-    Cellular_Function,
-    Protein_Unknown = -1
+	Hormon,
+	Enzyme,
+	TF,
+	Cellular_Function,
+	Protein_Unknown = -1
 };
+template<typename T>
 class Sequence
 {
 public:
-    Sequence();
-    Sequence(const std::string& _strand);
-    Sequence(const Sequence& cpy);
+	Sequence(int _length = 0);
+	Sequence(const T* _strand, int _length);
+	Sequence(const Sequence<T>& cpy);
 
-    virtual std::string getStrand() const;
-    virtual void setStrand(std::string _strand);
+	virtual const T* getStrand() const;
+	virtual void setStrand(const T* _strand, int _length);
 
-    virtual std::string getTypeName() const = 0;		//returns type name, ex. promoter DNA, rRNA, etc.
+	int getLength() const;
 
-    virtual bool LoadSequenceFromFile(char* filename) = 0;
-    virtual bool SaveSequenceToFile(char* filename) const = 0;
+	virtual const char* getTypeName() const = 0;		//returns type name, ex. promoter DNA, rRNA, etc.
 
-    std::string alignWith(const Sequence& other) ;
+	virtual bool LoadSequenceFromFile(const char* filename) = 0;
+	virtual bool SaveSequenceToFile(const char* filename) const = 0;
 
-    virtual ~Sequence();
+	const T* alignWith(const Sequence<T>& other);
+
+	template<typename T>
+	friend T* alignSequences(const Sequence<T>& a, const Sequence<T>& b);
+	virtual ~Sequence();
 protected:
-    std::string strand;
-private :
-    const int MAX_ARRAY_SIZE = 2e6;
-    int** mem;
-    int getLCS (std :: string& s1,std :: string& s2,int i, int j);
-    void fillLCS (std :: string& res, std :: string& s1, std :: string& s2,int i, int j);
+	int length;
+	T* strand;
+private:
+	const int MAX_ARRAY_SIZE = (int)2e6;
+	int** mem;
+	int getLCS(const T* s1, const T* s2, int i, int j);
+	void fillLCS(std::vector<T>& res, const T* s1, const T* s2, int i, int j);
 };
 
 #endif

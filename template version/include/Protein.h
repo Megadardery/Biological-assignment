@@ -3,31 +3,38 @@
 #include "Sequence.h"
 #include <iosfwd>
 #include <vector>
+
+template<typename T>
 class DNA;
+template<typename T>
 class RNA;
-class Protein : public Sequence
+
+template<typename T>
+class Protein : public Sequence<T>
 {
 public:
-	Protein();	//initializes the protein with an empty sequence and an unknown type
-	Protein(std::string _strand, ProteinType _type = Cellular_Function);
-	Protein(const Protein& cpy);
+	Protein(int _length = 0);	//initializes the protein with an empty sequence and an unknown type
+	Protein(const T* _strand, int _length, ProteinType _type = Cellular_Function);
+	Protein(const Protein<T>& cpy);
 
 	void setType(ProteinType _type);
 	ProteinType getType() const;
-	std::string getTypeName() const;	//uses current value of RNAType and returns name in english
+	const char * getTypeName() const;			//uses current value of RNAType and returns name in english
 
-	void setStrand(std::string _strand);
+	void setStrand(const T * _strand, int _length);
 
-	bool LoadSequenceFromFile(char* filename);
-	bool SaveSequenceToFile(char* filename) const;
+	bool LoadSequenceFromFile(const char* filename);
+	bool SaveSequenceToFile(const char* filename) const;
 
-	Protein operator +(const Protein& other) const;
-	bool operator ==(const Protein& other) const;
-	bool operator !=(const Protein& other) const;
-	friend std::ostream& operator <<(std::ostream& out, const Protein& obj);
-	friend std::istream& operator >>(std::istream& in, Protein& obj);
+	Protein<T> operator +(const Protein<T>& other) const;
+	bool operator ==(const Protein<T>& other) const;
+	bool operator !=(const Protein<T>& other) const;
 
-	std :: vector <DNA> GetDNAsEncodingMe(const DNA & bigDNA) const;
+	template<typename T>
+	friend std::ostream& operator <<(std::ostream& out, const Protein<T>& obj);
+	template<typename T>
+	friend std::istream& operator >>(std::istream& in, Protein<T>& obj);
+	std::vector<DNA<T>> GetDNAsEncodingMe(const DNA<T> & bigDNA) const;
 
 	virtual ~Protein();
 protected:

@@ -1,8 +1,8 @@
 #include "Codon.h"
-#include <string>
 #include <iostream>
+#include <fstream>
 
-const char Codon::mem[] = { 'K','N','K','N','T','T','T','T',
+char Codon::mem[] = { 'K','N','K','N','T','T','T','T',
 				'R','S','R','S','I','I','M','I',
 				'Q','H','Q','H','P','P','P','P',
 				'R','R','R','R','L','L','L','L',
@@ -39,12 +39,9 @@ bool Codon::operator!=(const Codon & other) const
 {
 	return !(*this == other);
 }
-std::string Codon::getSequence() const
+const char* Codon::getSequence() const
 {
-	std::string ret;
-	ret = a;
-	ret += b;
-	ret += c;
+	char ret[3] = { a,b,c };
 	return ret;
 }
 void Codon::setSequence(char * data)
@@ -59,7 +56,30 @@ void Codon::setSequence(char _a, char _b, char _c)
 	b = _b;
 	c = _c;
 }
-Codon :: ~Codon(){}
+Codon :: ~Codon() {}
+
+bool Codon::loadCodonsFromFile(const char * codonsFileName)
+{
+	std::fstream file;
+	file.open(codonsFileName);
+	if (!file.is_open()) return 0;
+	char codon[3];
+	char amino;
+	file >> codon >> amino;
+	while (!file.eof()) {
+		int f, s, l;
+		char tmp[4] = { 'A','C','G','U' };
+		for (int i = 0; i < 4; ++i)
+		{
+			if (codon[0] == tmp[i]) f = i;
+			if (codon[1] == tmp[i]) s = i;
+			if (codon[2] == tmp[i]) l = i;
+		}
+		mem[f * 16 + s * 4 + l] = amino;
+		file >> codon >> amino;	
+	}
+	return 1;
+}
 
 
 std::ostream & operator<<(std::ostream & out, const Codon & obj)

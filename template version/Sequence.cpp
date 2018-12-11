@@ -2,27 +2,44 @@
 #include <cstring>
 #include <algorithm>
 #include <stdexcept>
-Sequence::Sequence()
-{
+template<typename T>
+Sequence<T>::Sequence(int _length) {
+	length = _length;
+	strand = new T[length];
+}
 
-}
-Sequence::Sequence(const std::string& _strand)
+template<typename T>
+Sequence<T>::Sequence(const T* _strand, int _length)
 {
-	strand = _strand;
+	strand = nullptr;
+	setStrand(_strand, _length);
 }
-Sequence::Sequence(const Sequence& cpy)
+template<typename T>
+Sequence<T>::Sequence(const Sequence<T>& cpy)
 {
-	strand = cpy.strand;
+	strand = nullptr;
+	setStrand(cpy.strand, cpy.length);
 }
-std::string Sequence::getStrand() const
+template<typename T>
+const T* Sequence<T>::getStrand() const
 {
 	return strand;
 }
-void Sequence::setStrand(std::string _strand)
+template<typename T>
+void Sequence<T>::setStrand(const T* _strand, int _length)
 {
-	strand = _strand;
+	delete[] strand;
+	length = _length;
+	strand = new T[length];
+	memcpy(strand, _strand, length * sizeof T);
 }
-int Sequence::getLCS(std::string& s1, std::string& s2, int i, int j)
+template<typename T>
+int Sequence<T>::getLength() const
+{
+	return length;
+}
+template<typename T>
+int Sequence<T>::getLCS(const T* s1, const T* s2, int i, int j)
 {
 	if (i == -1)	return 0;
 	if (j == -1)	return 0;
@@ -33,7 +50,8 @@ int Sequence::getLCS(std::string& s1, std::string& s2, int i, int j)
 		ret = std::max(ret, getLCS(s1, s2, i - 1, j - 1) + 1);
 	return ret;
 }
-void Sequence::fillLCS(std::string& res, std::string& s1, std::string& s2, int i, int j)
+template<typename T>
+void Sequence<T>::fillLCS(std::vector<T>& res, const T* s1, const T* s2, int i, int j)
 {
 	if (i == -1)	return;
 	if (j == -1)	return;
@@ -49,15 +67,18 @@ void Sequence::fillLCS(std::string& res, std::string& s1, std::string& s2, int i
 	else
 	{
 		fillLCS(res, s1, s2, i - 1, j - 1);
-		res += s1[i];
+		res.push_back(s1[i]);
 	}
 }
-std::string Sequence::alignWith(const Sequence & other)
+
+template<typename T>
+const T* Sequence<T>::alignWith(const Sequence & other)
 {
+	/*
 	std::string s1 = strand;
 	std::string s2 = other.strand;
 	std::string res;
-
+	
 	// create memory
 	//int mx = std :: max(s1.size(),s2.size()) + 5;
 	if ((s1.size()*s2.size()) > MAX_ARRAY_SIZE) throw std::invalid_argument("Strings size is too large for this operation");
@@ -78,8 +99,22 @@ std::string Sequence::alignWith(const Sequence & other)
 	for (int i = 0; i < s1.size() + 5; ++i) delete[] mem[i];
 	delete[] mem;
 	return res;
+	*/
+	return nullptr;
 }
-Sequence :: ~Sequence()
-{
 
+template<typename T>
+Sequence<T> :: ~Sequence()
+{
+	delete[] strand;
 }
+template<typename T>
+T * alignSequences(const Sequence<T> & a, const Sequence<T> & b)
+{
+	return a.alignWith(b);
+}
+
+
+
+template class Sequence<int>;
+template class Sequence<char>;

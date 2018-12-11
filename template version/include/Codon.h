@@ -1,7 +1,6 @@
 #ifndef _CODON_H
 #define _CODON_H
 #include <iosfwd>
-#include <string>
 class Codon
 {
 
@@ -16,13 +15,14 @@ public:
 	friend std::ostream& operator <<(std::ostream& out, const Codon& obj);
 	friend std::istream& operator >>(std::istream& in, Codon& obj);
 
-	std::string getSequence() const;
+	const char* getSequence() const;
 	void setSequence(char* data);
 	void setSequence(char _a, char _b, char _c);
 	virtual ~Codon();
 
-protected:
+	static bool loadCodonsFromFile(const char * codonsFileName);
 	char a, b, c;
-	static const char mem[64];
+protected:
+	static char mem[64];
 };
 #endif

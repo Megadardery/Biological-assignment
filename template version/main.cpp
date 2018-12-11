@@ -6,14 +6,15 @@
 using namespace std;
 
 int main() {
-    DNA D1("AGCTG");
-    DNA D2("AGTG");
-    cout << D1.alignWith(D2) << "\n" << D1.alignWith(D1) << endl;
-    Protein prot("KNTRI");
-    DNA dna("AAGAATACTCGAATTTAAAAGAATACTCGAATTTAAAAGAATACTCGAATTAAGTAAAATACTCGAATTTAAAAGAATACTCGAATTTAAAAGAATACT");
-    vector <DNA> tmp = prot.GetDNAsEncodingMe(dna);
-    for (auto it = tmp.begin() ; it!=tmp.end();++it) cout << *it << endl;
-	DNA mydna;
+	DNA<char> D2("AGTG", 4);
+	DNA<char> D1("AGCTG", 5);
+	cout << D1;
+	//cout << D1.alignWith(D2) << "\n" << D1.alignWith(D1) << endl;
+	Protein<char> prot("KNTRI", 5);
+	DNA<char> dna("AAGAATACTCGAATTTAAAAGAATACTCGAATTTAAAAGAATACTCGAATTAAGTAAAATACTCGAATTTAAAAGAATACTCGAATTTAAAAGAATACT", 100);
+	vector <DNA<char>> tmp = prot.GetDNAsEncodingMe(dna);
+	for (auto it = tmp.begin(); it != tmp.end(); ++it) cout << *it << endl;
+	DNA<char> mydna;
 	bool entered = 0;
 	while (!entered) {
 		try {
@@ -25,8 +26,8 @@ int main() {
 		}
 	}
 	cout << endl << mydna;
-	RNA myrna1 = mydna.toRNA(true, mRNA);
-	RNA myrna2 = mydna.toRNA(false, pre_mRNA,0,5);
+	RNA<char> myrna1 = mydna.toRNA(true, mRNA);
+	RNA<char> myrna2 = mydna.toRNA(false, pre_mRNA, 0, 4);
 	cout << myrna1 << endl;
 	cout << myrna2 << endl;
 

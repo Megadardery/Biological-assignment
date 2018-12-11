@@ -1,34 +1,39 @@
 #include "Protein.h"
 #include "DNA.h"
 #include "RNA.h"
+#include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <stdexcept>
-//debugging
-#include <iostream>
-Protein::Protein()
-{
+template<typename T>
+Protein<T>::Protein(int _length) : Sequence<T>(_length) { }
 
-}
-Protein::Protein(std::string _strand, ProteinType _type)
+template<typename T>
+Protein<T>::Protein(const T* _strand, int _length, ProteinType _type) : Sequence<T>(_strand,_length)
 {
-	strand = _strand;
 	type = _type;
 }
-Protein::Protein(const Protein& cpy)
+
+template<typename T>
+Protein<T>::Protein(const Protein<T>& cpy) : Sequence<T>(cpy)
 {
-	strand = cpy.strand;
 	type = cpy.type;
 }
-void Protein::setType(ProteinType _type)
+
+template<typename T>
+void Protein<T>::setType(ProteinType _type)
 {
 	type = _type;
 }
-ProteinType Protein::getType() const
+
+template<typename T>
+ProteinType Protein<T>::getType() const
 {
 	return type;
 }
-std::string Protein::getTypeName() const
+
+template<typename T>
+const char* Protein<T>::getTypeName() const
 {
 	switch (type) {
 	case Hormon:
@@ -43,17 +48,25 @@ std::string Protein::getTypeName() const
 		return "Unknown";
 	}
 }
-void Protein::setStrand(std::string _strand)
+
+template<typename T>
+void Protein<T>::setStrand(const T* _strand, int _length)
 {
+	delete[] this->strand;
+	this->strand = new T[_length];
+	this->length = _length;
+
 	const char allowed[] = "ACDEFGHIKLMNPQRSTVWY";
-	for (int i = 0; i < (int)_strand.size(); ++i)
+	for (int i = 0; i < (int)_length; ++i)
 	{
-		if (!std::binary_search(allowed, allowed + 21, _strand[i]))
+		if (!std::binary_search(allowed, allowed + 21, (char)_strand[i]))
 			throw std::invalid_argument("Invalid character for Protein encountered");
+		this->strand[i] = _strand[i];
 	}
-	strand = _strand;
 }
-bool Protein::LoadSequenceFromFile(char* filename)
+
+template<typename T>
+bool Protein<T>::LoadSequenceFromFile(const char* filename)
 {
 	std::fstream file;
 	file.open(filename);
@@ -62,7 +75,8 @@ bool Protein::LoadSequenceFromFile(char* filename)
 	file.close();
 	return 1;
 }
-bool Protein::SaveSequenceToFile(char* filename) const
+template<typename T>
+bool Protein<T>::SaveSequenceToFile(const char* filename) const
 {
 	std::fstream file;
 	file.open(filename);
@@ -71,51 +85,77 @@ bool Protein::SaveSequenceToFile(char* filename) const
 	file.close();
 	return 1;
 }
-Protein Protein::operator+(const Protein & other) const
+template<typename T>
+Protein<T> Protein<T>::operator+(const Protein<T> & other) const
 {
-	return Protein(strand + other.strand);
+	int newlength = this->length + other.length;
+	T* temp = new T[newlength];
+
+	memcpy(temp, this->strand, this->length * sizeof T);
+	memcpy(temp + this->length, other.strand, other.length * sizeof T);
+
+	Protein ret(temp, newlength);
+	delete[] temp;
+	return ret;
 }
-bool Protein::operator==(const Protein & other) const
+template<typename T>
+bool Protein<T>::operator==(const Protein<T> & other) const
 {
-	return strand == other.strand && type == other.type;
+	if (this->length != other.length || type != other.type)
+		return 0;
+	else
+		return !memcmp(this->strand, other.strand, this->length * sizeof T);
 }
-bool Protein::operator!=(const Protein & other) const
+
+template<typename T>
+bool Protein<T>::operator!=(const Protein<T> & other) const
 {
 	return !(*this == other);
 }
-std :: vector <DNA> Protein::GetDNAsEncodingMe(const DNA & bigDNA) const
+
+template<typename T>
+std::vector <DNA<T>> Protein<T>::GetDNAsEncodingMe(const DNA<T> & bigDNA) const
 {
-    std :: vector <DNA> ret;
-	std :: string DNAstrand = bigDNA.getStrand();
-	int DNAsiz = DNAstrand.size();
-	int Psiz = strand.size();
-	int en = (DNAsiz - (Psiz+1)*3);
-	for (int i = 0 ; i <=en ; ++i)
-    {
-        if (Protein((bigDNA.toRNA(1,RNA_Unknown,i,i+(Psiz+1)*3-1)).toProtein(type,0)) == *this)
-        {
-           ret.push_back(DNA(DNAstrand.substr(i,(Psiz+1)*3-1)));
-        }
-    }
+	std::vector <DNA<T>> ret;
+	const T* DNAstrand = bigDNA.getStrand();
+	int DNAsiz = bigDNA.getLength();
+	int Psiz = this->length;
+	int en = (DNAsiz - (Psiz + 1) * 3);
+	for (int i = 0; i < en; ++i)
+	{
+		if (Protein<T>((bigDNA.toRNA(1, RNA_Unknown, i, i + (Psiz + 1) * 3 - 1)).toProtein(type, 0)) == *this)
+		{
+			//@TODO implement substr
+			//ret.push_back(DNA<T>(DNAstrand.substr(i, (Psiz + 1) * 3 - 1)));
+		}
+	}
 	return ret;
 }
-Protein :: ~Protein()
+template<typename T>
+Protein<T> :: ~Protein()
 {
-
+	
 }
 
-std::ostream & operator<<(std::ostream & out, const Protein & obj)
+template<typename T>
+std::ostream & operator<<(std::ostream & out, const Protein<T> & obj)
 {
-	out << obj.getTypeName() << '\n' << obj.strand << '\n';
-	return out;
+	out << obj.getTypeName() << '\n';
+	out << obj.length << '\n';
+
+	for (int i = 0; i < obj.length; ++i)
+		out << obj.strand[i] << " ";
+
+	return out << '\n';
 }
 
-std::istream & operator>>(std::istream & in, Protein & obj)
+template<typename T>
+std::istream & operator>>(std::istream & in, Protein<T> & obj)
 {
-	std::string typeName;
-	getline(in, typeName);
+	char typeName[31];
+	in.getline(typeName,30);
 	//make input lowercase
-	for (int i = 0; i < (int)typeName.size(); i++) {
+	for (int i = 0; i < typeName[i]; i++) {
 		if (typeName[i] >= 'A' && typeName[i] <= 'Z')
 			typeName[i] += 0x20;
 	}
@@ -126,8 +166,16 @@ std::istream & operator>>(std::istream & in, Protein & obj)
 	else if (typeName == "cellular function") obj.type = Cellular_Function;
 	else obj.type = Protein_Unknown;
 
-	std::string tmp;
-	getline(in, tmp);
-	obj.setStrand(tmp);
+	int _length;
+	in >> _length;
+	T* tmp = new T[_length];
+	for (int i = 0; i < _length; ++i)
+		in >> tmp[i];
+
+	obj.setStrand(tmp, _length);
+	delete[] tmp;
 	return in;
 }
+
+template class Protein<int>;
+template class Protein<char>;

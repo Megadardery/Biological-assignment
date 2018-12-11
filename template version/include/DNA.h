@@ -3,42 +3,47 @@
 #include "Sequence.h"
 #include <iosfwd>
 
+template<typename T>
 class RNA;
-class DNA : public Sequence
+
+template<typename T>
+class DNA : public Sequence<T>
 {
 public:
-	DNA();
-	DNA(const std::string& _strand, DNAType _type = DNA_Unknown);
-	DNA(const DNA& cpy);
+	DNA(int length = 0);
+	DNA(const T* _strand1, int _length, DNAType _type = DNA_Unknown);
+	DNA(const DNA<T>& cpy);
 
-	std::string getStrand2() const;
+	const T* getStrand2() const;
 
-	void setStrand(std::string _strand);		//we override this to automatically generate_strand2()
-	void setStrand2(std::string _strand2);		//new function (not overridden) uses generate_strand1()
+	void setStrand(const T* _strand, int _length);			//we override this to automatically generate_strand2()
+	void setStrand2(const T* _strand2, int _length);		//new function (not overridden) uses generate_strand1()
 
 	DNAType getType() const;
-	std::string getTypeName() const;	//uses current value of DNAType and returns name in english
+	const char* getTypeName() const;						//uses current value of DNAType and returns name in english
 
-	RNA toRNA(bool fromMainStrand = true, RNAType _type = mRNA, int s = -1, int e = -1) const;
+	RNA<T> toRNA(bool fromMainStrand = true, RNAType _type = mRNA, int s = -1, int e = -1) const;
 
 
-	bool LoadSequenceFromFile(char* filename);
-	bool SaveSequenceToFile(char* filename) const;
+	bool LoadSequenceFromFile(const char* filename);
+	bool SaveSequenceToFile(const char* filename) const;
 
-	DNA operator +(const DNA& other) const;
-	bool operator ==(const DNA& other) const;
-	bool operator !=(const DNA& other) const;
-	friend std::ostream& operator <<(std::ostream& out, const DNA& obj);
-	friend std::istream& operator >>(std::istream& in, DNA& obj);
+	DNA<T> operator +(const DNA<T>& other) const;
+	bool operator ==(const DNA<T>& other) const;
+	bool operator !=(const DNA<T>& other) const;
+	template<typename T>
+	friend std::ostream& operator <<(std::ostream& out, const DNA<T>& obj);
+	template<typename T>
+	friend std::istream& operator >>(std::istream& in, DNA<T>& obj);
 
 
 	virtual ~DNA();
 protected:
 	DNAType type;
-	std::string strand2;
+	T* strand2;
 	void generate_strand1();
 	void generate_strand2();
 private:
-	void generate_strand_util(std::string& src, std::string& des);
+	void generate_strand_util(const T* src, T* & des);
 };
 #endif

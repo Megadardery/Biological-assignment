@@ -1,37 +1,47 @@
 #include "RNA.h"
 #include "DNA.h"
 #include "Protein.h"
+#include <iostream>
 #include <fstream>
 #include <stdexcept>
-RNA::RNA()
-{
 
-}
-RNA::RNA(const std::string& _strand, RNAType _type)
+template<typename T>
+RNA<T>::RNA(int _length) : Sequence<T>(_length) { }
+
+template<typename T>
+RNA<T>::RNA(const T* _strand, int _length, RNAType _type) : Sequence<T>(_strand, _length)
 {
-	setStrand(_strand);
 	type = _type;
 }
-RNA::RNA(const RNA& cpy)
+
+template<typename T>
+RNA<T>::RNA(const RNA<T>& cpy) : Sequence<T>(cpy)
 {
-	strand = cpy.strand;
 	type = cpy.type;
 }
-RNA::RNA(const DNA& dna, bool fromMainStrand, RNAType _type, int s, int e)
+
+template<typename T>
+RNA<T>::RNA(const DNA<T>& dna, bool fromMainStrand, RNAType _type, int s, int e)
 {
-	RNA temp = dna.toRNA(fromMainStrand, type, s, e);
-	strand = temp.strand;
-	type = temp.type;
+	RNA tmp = dna.toRNA(fromMainStrand, _type, s, e);
+	setStrand(tmp.strand, tmp.length);
+	type = tmp.type;
 }
-void RNA::setType(RNAType _type)
+
+template<typename T>
+void RNA<T>::setType(RNAType _type)
 {
 	type = _type;
 }
-RNAType RNA::getType() const
+
+template<typename T>
+RNAType RNA<T>::getType() const
 {
 	return type;
 }
-std::string RNA::getTypeName() const
+
+template<typename T>
+const char* RNA<T>::getTypeName() const
 {
 	switch (type) {
 	case mRNA:
@@ -46,42 +56,53 @@ std::string RNA::getTypeName() const
 		return "Unknown";
 	}
 }
-Codon RNA::getCodon(int index) const
+template<typename T>
+Codon RNA<T>::getCodon(int index) const
 {
-	return Codon(strand[index * 3], strand[index * 3 + 1], strand[index * 3 + 2]);
+	return Codon(this->strand[index * 3], this->strand[index * 3 + 1], this->strand[index * 3 + 2]);
 }
-void RNA::setCodon(int index, const Codon & value)
+template<typename T>
+void RNA<T>::setCodon(int index, const Codon & value)
 {
-	std::string ret = value.getSequence();
-	strand[index * 3] = ret[0];
-	strand[index * 3 + 1] = ret[1];
-	strand[index * 3 + 2] = ret[2];
+	
+	this->strand[index * 3] = value.a;
+	this->strand[index * 3 + 1] = value.b;
+	this->strand[index * 3 + 2] = value.c;
 
 }
-void RNA::setStrand(std::string _strand)
+template<typename T>
+void RNA<T>::setStrand(const T* _strand, int _length)
 {
-	for (int i = 0; i < (int)_strand.size(); ++i)
+	this->length = _length;
+	delete[] this->strand;
+	this->strand = new T[this->length];
+	for (int i = 0; i < (int)_length; ++i)
 	{
 		if (_strand[i] != 'A' && _strand[i] != 'U' && _strand[i] != 'G' && _strand[i] != 'C')
 			throw std::invalid_argument("Invalid character for RNA encountered");
+		this->strand[i] = _strand[i];
 	}
-	strand = _strand;
 }
-Protein RNA::toProtein(ProteinType _type, int s) const
+template<typename T>
+Protein<T> RNA<T>::toProtein(ProteinType _type, int s) const
 {
-	std::string ret;
+	T* ret = new T[(this->length - s) / 3];
+	int sz = 0;
 	char currAmino;
-	for (int i = s; i < (int)strand.size(); i += 3)
+	for (int i = s; i+2 < this->length; i += 3)
 	{
-		currAmino = Codon(strand[i], strand[i + 1], strand[i + 2]).toAminoAcid();
+		currAmino = Codon(this->strand[i], this->strand[i + 1], this->strand[i + 2]).toAminoAcid();
 		if (currAmino != '*')
-			ret += currAmino;
+			ret[sz++] = currAmino;
 		else
-			return (Protein(ret, _type));
+			break;
 	}
-	return (Protein(ret, _type));
+	Protein<T> res(ret, sz);
+	delete[] ret;
+	return res;
 }
-bool RNA::LoadSequenceFromFile(char* filename)
+template<typename T>
+bool RNA<T>::LoadSequenceFromFile(const char* filename)
 {
 	std::fstream file;
 	file.open(filename);
@@ -90,7 +111,8 @@ bool RNA::LoadSequenceFromFile(char* filename)
 	file.close();
 	return 1;
 }
-bool RNA::SaveSequenceToFile(char* filename) const
+template<typename T>
+bool RNA<T>::SaveSequenceToFile(const char* filename) const
 {
 	std::fstream file;
 	file.open(filename);
@@ -99,35 +121,55 @@ bool RNA::SaveSequenceToFile(char* filename) const
 	file.close();
 	return 1;
 }
-RNA RNA::operator+(const RNA & other) const
+template<typename T>
+RNA<T> RNA<T>::operator+(const RNA<T> & other) const
 {
-	return RNA(strand + other.strand);
+	int newlength = this->length + other.length;
+	T* temp = new T[newlength];
+
+	memcpy(temp, this->strand, this->length * sizeof T);
+	memcpy(temp + this->length, other.strand, other.length * sizeof T);
+
+	RNA<T> ret(temp, newlength);
+	delete[] temp;
+	return ret;
 }
-bool RNA::operator==(const RNA & other) const
+template<typename T>
+bool RNA<T>::operator==(const RNA<T> & other) const
 {
-	return strand == other.strand && type == other.type;
+	if (this->length != other.length || type != other.type)
+		return 0;
+	else
+		return !memcmp(this->strand, other.strand, this->length * sizeof T);
 }
-bool RNA::operator!=(const RNA & other) const
+template<typename T>
+bool RNA<T>::operator!=(const RNA<T> & other) const
 {
 	return !(*this == other);
 }
-RNA :: ~RNA()
+template<typename T>
+RNA<T> :: ~RNA()
 {
 
 }
-
-std::ostream & operator<<(std::ostream & out, const RNA & obj)
+template<typename T>
+std::ostream & operator<<(std::ostream & out, const RNA<T> & obj)
 {
-	out << obj.getTypeName() << '\n' << obj.strand << '\n';
-	return out;
+	out << obj.getTypeName() << '\n';
+	out << obj.length << '\n';
+
+	for (int i = 0; i < obj.length; ++i)
+		out << obj.strand[i] << " ";
+
+	return out << '\n';
 }
-
-std::istream & operator>>(std::istream & in, RNA & obj)
+template<typename T>
+std::istream & operator>>(std::istream & in, RNA<T> & obj)
 {
-	std::string typeName;
-	getline(in, typeName);
+	char typeName[31];
+	in.getline(typeName,30);
 	//make input lowercase
-	for (int i = 0; i < (int)typeName.size(); i++) {
+	for (int i = 0; typeName[i]; i++) {
 		if (typeName[i] >= 'A' && typeName[i] <= 'Z')
 			typeName[i] += 0x20;
 	}
@@ -138,8 +180,16 @@ std::istream & operator>>(std::istream & in, RNA & obj)
 	else if (typeName == "mrna intron") obj.type = mRNA_intron;
 	else obj.type = RNA_Unknown;
 
-	std::string tmp;
-	getline(in, tmp);
-	obj.setStrand(tmp);
+	int _length;
+	in >> _length;
+	T* tmp = new T[_length];
+	for (int i = 0; i < _length; ++i)
+		in >> tmp[i];
+
+	obj.setStrand(tmp, _length);
+	delete[] tmp;
 	return in;
 }
+
+template class RNA<int>;
+template class RNA<char>;
