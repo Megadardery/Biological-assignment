@@ -35,10 +35,12 @@ public:
 	RNA<T> operator +(const RNA<T>& other) const;
 	bool operator ==(const RNA<T>& other) const;
 	bool operator !=(const RNA<T>& other) const;
-	template<typename T>
-	friend std::ostream& operator <<(std::ostream& out, const RNA<T>& obj);
-	template<typename T>
-	friend std::istream& operator >>(std::istream& in, RNA<T>& obj);
+	RNA<T>& operator =(const RNA<T> other);
+
+	template<typename U>
+	friend std::ostream& operator <<(std::ostream& out, const RNA<U>& obj);
+	template<typename Z>
+	friend std::istream& operator >>(std::istream& in, RNA<Z>& obj);
 
 	virtual ~RNA();
 protected:

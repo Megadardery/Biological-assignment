@@ -5,6 +5,7 @@
 #include <fstream>
 #include <algorithm>
 #include <stdexcept>
+#include <cstring>
 template<typename T>
 Protein<T>::Protein(int _length) : Sequence<T>(_length) { }
 
@@ -68,7 +69,7 @@ void Protein<T>::setStrand(const T* _strand, int _length)
 template<typename T>
 bool Protein<T>::LoadSequenceFromFile(const char* filename)
 {
-	std::fstream file;
+	std::ifstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator>>(file, *this);
@@ -78,7 +79,7 @@ bool Protein<T>::LoadSequenceFromFile(const char* filename)
 template<typename T>
 bool Protein<T>::SaveSequenceToFile(const char* filename) const
 {
-	std::fstream file;
+	std::ofstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator<<(file, *this);
@@ -91,8 +92,8 @@ Protein<T> Protein<T>::operator+(const Protein<T> & other) const
 	int newlength = this->length + other.length;
 	T* temp = new T[newlength];
 
-	memcpy(temp, this->strand, this->length * sizeof T);
-	memcpy(temp + this->length, other.strand, other.length * sizeof T);
+	memcpy(temp, this->strand, this->length * sizeof (T));
+	memcpy(temp + this->length, other.strand, other.length * sizeof (T));
 
 	Protein ret(temp, newlength);
 	delete[] temp;
@@ -104,13 +105,22 @@ bool Protein<T>::operator==(const Protein<T> & other) const
 	if (this->length != other.length || type != other.type)
 		return 0;
 	else
-		return !memcmp(this->strand, other.strand, this->length * sizeof T);
+		return !memcmp(this->strand, other.strand, this->length * sizeof (T));
 }
 
 template<typename T>
 bool Protein<T>::operator!=(const Protein<T> & other) const
 {
 	return !(*this == other);
+}
+
+template<typename T>
+Protein<T>& Protein<T>::operator=(const Protein<T>& other)
+{
+	this->type = other.type;
+	this->strand = nullptr;
+	setStrand(other.strand, other.length);
+	return *this;
 }
 
 template<typename T>
@@ -123,10 +133,12 @@ std::vector <DNA<T>> Protein<T>::GetDNAsEncodingMe(const DNA<T> & bigDNA) const
 	int en = (DNAsiz - (Psiz + 1) * 3);
 	for (int i = 0; i < en; ++i)
 	{
-		if (Protein<T>((bigDNA.toRNA(1, RNA_Unknown, i, i + (Psiz + 1) * 3 - 1)).toProtein(type, 0)) == *this)
+		if (Protein<T>((bigDNA.toRNA(1, mRNA, i, i + (Psiz + 1) * 3 - 1)).toProtein(type, 0)) == *this)
 		{
-			//@TODO implement substr
-			//ret.push_back(DNA<T>(DNAstrand.substr(i, (Psiz + 1) * 3 - 1)));
+			ret.push_back(
+                 DNA<T>(
+                        bigDNA.substrand(i, (Psiz + 1) * 3),(Psiz + 1) * 3,
+                        bigDNA.getType()));
 		}
 	}
 	return ret;
@@ -134,7 +146,7 @@ std::vector <DNA<T>> Protein<T>::GetDNAsEncodingMe(const DNA<T> & bigDNA) const
 template<typename T>
 Protein<T> :: ~Protein()
 {
-	
+
 }
 
 template<typename T>

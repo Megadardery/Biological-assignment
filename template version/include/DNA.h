@@ -28,15 +28,16 @@ public:
 	bool LoadSequenceFromFile(const char* filename);
 	bool SaveSequenceToFile(const char* filename) const;
 
-	DNA<T> operator +(const DNA<T>& other) const;
+	DNA<T> operator +(const DNA<T>& other)const ;
 	bool operator ==(const DNA<T>& other) const;
 	bool operator !=(const DNA<T>& other) const;
-	template<typename T>
-	friend std::ostream& operator <<(std::ostream& out, const DNA<T>& obj);
-	template<typename T>
-	friend std::istream& operator >>(std::istream& in, DNA<T>& obj);
+	DNA<T>& operator =(const DNA<T> other);
+	template<typename U>
+	friend std::ostream& operator <<(std::ostream& out, const DNA<U>& obj);
+	template<typename Z>
+	friend std::istream& operator >>(std::istream& in, DNA<Z>& obj);
 
-
+    T* substrand(int s , int siz) const;
 	virtual ~DNA();
 protected:
 	DNAType type;

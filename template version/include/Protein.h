@@ -29,11 +29,12 @@ public:
 	Protein<T> operator +(const Protein<T>& other) const;
 	bool operator ==(const Protein<T>& other) const;
 	bool operator !=(const Protein<T>& other) const;
+	Protein<T>& operator =(const Protein<T>& other);
 
-	template<typename T>
-	friend std::ostream& operator <<(std::ostream& out, const Protein<T>& obj);
-	template<typename T>
-	friend std::istream& operator >>(std::istream& in, Protein<T>& obj);
+	template<typename U>
+	friend std::ostream& operator <<(std::ostream& out, const Protein<U>& obj);
+	template<typename Z>
+	friend std::istream& operator >>(std::istream& in, Protein<Z>& obj);
 	std::vector<DNA<T>> GetDNAsEncodingMe(const DNA<T> & bigDNA) const;
 
 	virtual ~Protein();

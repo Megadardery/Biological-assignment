@@ -4,7 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
-
+#include <algorithm>
+#include <cstring>
 template<typename T>
 RNA<T>::RNA(int _length) : Sequence<T>(_length) { }
 
@@ -64,7 +65,7 @@ Codon RNA<T>::getCodon(int index) const
 template<typename T>
 void RNA<T>::setCodon(int index, const Codon & value)
 {
-	
+
 	this->strand[index * 3] = value.a;
 	this->strand[index * 3 + 1] = value.b;
 	this->strand[index * 3 + 2] = value.c;
@@ -104,7 +105,7 @@ Protein<T> RNA<T>::toProtein(ProteinType _type, int s) const
 template<typename T>
 bool RNA<T>::LoadSequenceFromFile(const char* filename)
 {
-	std::fstream file;
+	std::ifstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator>>(file, *this);
@@ -114,7 +115,7 @@ bool RNA<T>::LoadSequenceFromFile(const char* filename)
 template<typename T>
 bool RNA<T>::SaveSequenceToFile(const char* filename) const
 {
-	std::fstream file;
+	std::ofstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator<<(file, *this);
@@ -127,8 +128,8 @@ RNA<T> RNA<T>::operator+(const RNA<T> & other) const
 	int newlength = this->length + other.length;
 	T* temp = new T[newlength];
 
-	memcpy(temp, this->strand, this->length * sizeof T);
-	memcpy(temp + this->length, other.strand, other.length * sizeof T);
+	memcpy(temp, this->strand, this->length * sizeof(T));
+	memcpy(temp + this->length, other.strand, other.length * sizeof(T));
 
 	RNA<T> ret(temp, newlength);
 	delete[] temp;
@@ -140,12 +141,20 @@ bool RNA<T>::operator==(const RNA<T> & other) const
 	if (this->length != other.length || type != other.type)
 		return 0;
 	else
-		return !memcmp(this->strand, other.strand, this->length * sizeof T);
+		return !memcmp(this->strand, other.strand, this->length * sizeof(T));
 }
 template<typename T>
 bool RNA<T>::operator!=(const RNA<T> & other) const
 {
 	return !(*this == other);
+}
+template<typename T>
+RNA<T>& RNA<T>::operator=(const RNA<T> other)
+{
+	this->type = other.type;
+	this->strand = nullptr;
+	setStrand(other.strand, other.length);
+	return *this;
 }
 template<typename T>
 RNA<T> :: ~RNA()

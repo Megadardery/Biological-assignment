@@ -3,6 +3,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
+#include <cstring>
 template<typename T>
 DNA<T>::DNA(int _length) : Sequence<T>(_length)
 {
@@ -75,7 +77,7 @@ const char* DNA<T>::getTypeName() const
 template<typename T>
 bool DNA<T>::LoadSequenceFromFile(const char* filename)
 {
-	std::fstream file;
+	std::ifstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator>>(file, *this);
@@ -85,22 +87,23 @@ bool DNA<T>::LoadSequenceFromFile(const char* filename)
 template<typename T>
 bool DNA<T>::SaveSequenceToFile(const char* filename) const
 {
-	std::fstream file;
+	std::ofstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator<<(file, *this);
 	file.close();
 	return 1;
 }
-template<typename T>
+template<class T>
 DNA<T> DNA<T>::operator+(const DNA & other) const
 {
 	int newlength = this->length + other.length;
 	T* temp = new T[newlength];
-
-	memcpy(temp, this->strand, this->length * sizeof T);
-	memcpy(temp + this->length, other.strand, other.length * sizeof T);
-
+	int c = 0;
+	//for (int i = 0 ; i<this-> length ; ++i) temp[i] = this->strand[i];
+	//for (int i = 0 ; i<other.length ; ++i) temp[i] = other.strand[i];
+	memcpy (temp ,  this->strand , this->length * sizeof(T));
+	memcpy (temp + this->length, other.strand, other.length * sizeof(T));
 	DNA ret(temp, newlength);
 	delete[] temp;
 	return ret;
@@ -111,12 +114,27 @@ bool DNA<T>::operator==(const DNA & other) const
 	if (this->length != other.length || type != other.type)
 		return 0;
 	else
-		return !memcmp(this->strand, other.strand, this->length * sizeof T);
+    {
+        /*for (int i = 0 ; i<this->length ; ++i) if (this->strand[i] != other.strand[i]) return 0;
+		return 1;*/
+		return !memcmp(this->strand, other.strand, this->length * sizeof(T));
+    }
 }
 template<typename T>
 bool DNA<T>::operator!=(const DNA & other) const
 {
 	return !(*this == other);
+}
+
+template<typename T>
+DNA<T>& DNA<T>::operator=(const DNA<T> other)
+{
+	this->type = other.type;
+	this->strand = nullptr;
+	setStrand(other.strand, other.length);
+	strand2 = nullptr;
+	generate_strand2();
+	return *this;
 }
 
 template<typename T>
@@ -158,6 +176,13 @@ void DNA<T>::generate_strand2()
 	generate_strand_util(this->strand, strand2);
 }
 template<typename T>
+T* DNA<T> ::  substrand(int s , int siz) const
+{
+    T* ret = new T [siz];
+    for (int i = 0 ; i<siz ; ++i) ret[i] = this->strand[s++];
+    return ret;
+}
+template<typename T>
 RNA<T> DNA<T>::toRNA(bool fromMainStrand, RNAType _type, int s, int e) const
 {
 	if (s == -1) s++;
@@ -170,9 +195,9 @@ RNA<T> DNA<T>::toRNA(bool fromMainStrand, RNAType _type, int s, int e) const
 	int newlength = e - s + 1;
 	T* converted = new T[newlength];
 	if (fromMainStrand)
-		memcpy(converted, this->strand + s, newlength * sizeof T);
+		memcpy(converted, this->strand + s, newlength * sizeof(T));
 	else
-		memcpy(converted, strand2 + s, newlength * sizeof T);
+		memcpy(converted, strand2 + s, newlength * sizeof(T));
 
 
 	for (int i = 0; i < newlength; ++i)

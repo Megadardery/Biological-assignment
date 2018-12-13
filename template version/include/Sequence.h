@@ -43,10 +43,10 @@ public:
 	virtual bool LoadSequenceFromFile(const char* filename) = 0;
 	virtual bool SaveSequenceToFile(const char* filename) const = 0;
 
-	const T* alignWith(const Sequence<T>& other);
+	std :: vector<T> alignWith(const Sequence<T>& other) ;
 
-	template<typename T>
-	friend T* alignSequences(const Sequence<T>& a, const Sequence<T>& b);
+	template<typename U>
+	friend T* alignSequences(const Sequence<U>& a, const Sequence<U>& b);
 	virtual ~Sequence();
 protected:
 	int length;

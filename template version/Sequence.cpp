@@ -1,7 +1,7 @@
 #include "Sequence.h"
-#include <cstring>
 #include <algorithm>
 #include <stdexcept>
+#include <cstring>
 template<typename T>
 Sequence<T>::Sequence(int _length) {
 	length = _length;
@@ -31,7 +31,7 @@ void Sequence<T>::setStrand(const T* _strand, int _length)
 	delete[] strand;
 	length = _length;
 	strand = new T[length];
-	memcpy(strand, _strand, length * sizeof T);
+	memcpy(strand, _strand, length * sizeof(T));
 }
 template<typename T>
 int Sequence<T>::getLength() const
@@ -72,35 +72,33 @@ void Sequence<T>::fillLCS(std::vector<T>& res, const T* s1, const T* s2, int i, 
 }
 
 template<typename T>
-const T* Sequence<T>::alignWith(const Sequence & other)
+std :: vector<T> Sequence<T>::alignWith(const Sequence & other)
 {
-	/*
-	std::string s1 = strand;
-	std::string s2 = other.strand;
-	std::string res;
-	
+
+	std :: vector <T> res;
+	int siz1 = this->length;
+	int siz2 = other.getLength();
 	// create memory
-	//int mx = std :: max(s1.size(),s2.size()) + 5;
-	if ((s1.size()*s2.size()) > MAX_ARRAY_SIZE) throw std::invalid_argument("Strings size is too large for this operation");
-	mem = new int*[s1.size() + 5];
-	for (int i = 0; i < (int)(s1.size() + 5); ++i) mem[i] = new int[s2.size() + 5];
+	if ((siz1*siz2) > MAX_ARRAY_SIZE) throw std::invalid_argument("Strings size is too large for this operation");
+	mem = new int*[siz1 + 5];
+	for (int i = 0; i < (int)(siz1 + 5); ++i) mem[i] = new int[siz2 + 5];
+
 	//Initializing memory by -1
-	for (int i = 0; i < s1.size() + 5; ++i)
+	for (int i = 0; i < siz1 + 5; ++i)
 	{
-		for (int j = 0; j < s2.size() + 5; ++j)
+		for (int j = 0; j < siz2 + 5; ++j)
 		{
 			mem[i][j] = -1;
 		}
 	}
-	getLCS(s1, s2, s1.size() - 1, s2.size() - 1);
-	fillLCS(res, s1, s2, s1.size() - 1, s2.size() - 1);
+	getLCS(this->strand, other.strand, siz1-1, siz2 - 1);
+	fillLCS(res, this->strand, other.strand, siz1-1, siz2 - 1);
 
 	// releasing memory
-	for (int i = 0; i < s1.size() + 5; ++i) delete[] mem[i];
+	for (int i = 0; i < siz1 + 5; ++i) delete[] mem[i];
 	delete[] mem;
 	return res;
-	*/
-	return nullptr;
+
 }
 
 template<typename T>
