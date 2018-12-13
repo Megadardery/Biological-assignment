@@ -5,6 +5,13 @@
 #include <iostream>
 #include <algorithm>
 #include <cstring>
+
+//For most of the following constructors, we copy the first strand
+//using the base constructor.. we set strand2 to nullptr
+//(so it doesn't get deleted) and use generate_strand2
+//this function deletes current memory and
+//assigns complementry strand
+
 template<typename T>
 DNA<T>::DNA(int _length) : Sequence<T>(_length)
 {
@@ -31,6 +38,7 @@ const T* DNA<T>::getStrand2() const
 {
 	return strand2;
 }
+//set strand and checks that the characters are valid
 template<typename T>
 void DNA<T>::setStrand(const T* _strand, int _length)
 {
@@ -64,7 +72,7 @@ DNAType DNA<T>::getType() const
 {
 	return type;
 }
-
+//gets the string equivalent of the type
 template<typename T>
 const char* DNA<T>::getTypeName() const
 {
@@ -80,6 +88,7 @@ bool DNA<T>::LoadSequenceFromFile(const char* filename)
 	std::ifstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
+	//Uses same format as standard output
 	operator>>(file, *this);
 	file.close();
 	return 1;
@@ -90,10 +99,12 @@ bool DNA<T>::SaveSequenceToFile(const char* filename) const
 	std::ofstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
+	//Uses same format as standard input
 	operator<<(file, *this);
 	file.close();
 	return 1;
 }
+//combines two DNA sequences (append)
 template<class T>
 DNA<T> DNA<T>::operator+(const DNA & other) const
 {
@@ -115,8 +126,6 @@ bool DNA<T>::operator==(const DNA & other) const
 		return 0;
 	else
     {
-        /*for (int i = 0 ; i<this->length ; ++i) if (this->strand[i] != other.strand[i]) return 0;
-		return 1;*/
 		return !memcmp(this->strand, other.strand, this->length * sizeof(T));
     }
 }
@@ -130,10 +139,7 @@ template<typename T>
 DNA<T>& DNA<T>::operator=(const DNA<T> other)
 {
 	this->type = other.type;
-	this->strand = nullptr;
 	setStrand(other.strand, other.length);
-	strand2 = nullptr;
-	generate_strand2();
 	return *this;
 }
 
@@ -214,6 +220,9 @@ DNA<T> :: ~DNA()
 template<typename T>
 std::ostream & operator<<(std::ostream & out, const DNA<T> & obj)
 {
+	//TypeName
+	//Strand1
+	//Complementry Strand
 	out << obj.getTypeName() << '\n';
 	out << obj.length << '\n';
 
@@ -255,5 +264,6 @@ std::istream & operator>>(std::istream & in, DNA<T> & obj)
 	return in;
 }
 
+//This is required for seperate compilation files
 template class DNA<int>;
 template class DNA<char>;

@@ -118,7 +118,6 @@ template<typename T>
 Protein<T>& Protein<T>::operator=(const Protein<T>& other)
 {
 	this->type = other.type;
-	this->strand = nullptr;
 	setStrand(other.strand, other.length);
 	return *this;
 }
@@ -126,6 +125,14 @@ Protein<T>& Protein<T>::operator=(const Protein<T>& other)
 template<typename T>
 std::vector <DNA<T>> Protein<T>::GetDNAsEncodingMe(const DNA<T> & bigDNA) const
 {
+	//we use a sliding window on DNA of size (n+1)*3
+	//3 characters (codon) for each amino acid with
+	//a stop codon
+
+	//We move that sliding window and convert the appropriate
+	//range to RNA and then to Protein
+
+	//if the proteins are equal we add that to the range.
 	std::vector <DNA<T>> ret;
 	const T* DNAstrand = bigDNA.getStrand();
 	int DNAsiz = bigDNA.getLength();
@@ -133,6 +140,7 @@ std::vector <DNA<T>> Protein<T>::GetDNAsEncodingMe(const DNA<T> & bigDNA) const
 	int en = (DNAsiz - (Psiz + 1) * 3);
 	for (int i = 0; i < en; ++i)
 	{
+		//toRNA is inclusive
 		if (Protein<T>((bigDNA.toRNA(1, mRNA, i, i + (Psiz + 1) * 3 - 1)).toProtein(type, 0)) == *this)
 		{
 			ret.push_back(
@@ -152,6 +160,8 @@ Protein<T> :: ~Protein()
 template<typename T>
 std::ostream & operator<<(std::ostream & out, const Protein<T> & obj)
 {
+	//Typename
+	//Strand
 	out << obj.getTypeName() << '\n';
 	out << obj.length << '\n';
 
@@ -189,5 +199,6 @@ std::istream & operator>>(std::istream & in, Protein<T> & obj)
 	return in;
 }
 
+//This is required for seperate compilation files
 template class Protein<int>;
 template class Protein<char>;

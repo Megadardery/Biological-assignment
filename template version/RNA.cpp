@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cstring>
+//Basic constructors for RNA, use base constructors
 template<typename T>
 RNA<T>::RNA(int _length) : Sequence<T>(_length) { }
 
@@ -21,6 +22,7 @@ RNA<T>::RNA(const RNA<T>& cpy) : Sequence<T>(cpy)
 	type = cpy.type;
 }
 
+//uses setStrand to ensure that the sequence entered is valid.
 template<typename T>
 RNA<T>::RNA(const DNA<T>& dna, bool fromMainStrand, RNAType _type, int s, int e)
 {
@@ -41,6 +43,7 @@ RNAType RNA<T>::getType() const
 	return type;
 }
 
+//gets the string equivalent of the type
 template<typename T>
 const char* RNA<T>::getTypeName() const
 {
@@ -152,7 +155,6 @@ template<typename T>
 RNA<T>& RNA<T>::operator=(const RNA<T> other)
 {
 	this->type = other.type;
-	this->strand = nullptr;
 	setStrand(other.strand, other.length);
 	return *this;
 }
@@ -200,5 +202,6 @@ std::istream & operator>>(std::istream & in, RNA<T> & obj)
 	return in;
 }
 
+//This is required for seperate compilation files
 template class RNA<int>;
 template class RNA<char>;

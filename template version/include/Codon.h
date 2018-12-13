@@ -1,3 +1,9 @@
+// Course:  CS213 - Programming II  - 2018
+// Title:   Codon Header
+// Purpose: A class that manages codons
+// Author:  Ahmed Nasr Eldardery, Belal Hamdy Ezzat, Adham Mamdouh Mohammed
+// Date:    13th December 2018
+// Version: 1.0
 #ifndef _CODON_H
 #define _CODON_H
 #include <iosfwd>

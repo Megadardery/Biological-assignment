@@ -1,3 +1,9 @@
+// Course:  CS213 - Programming II  - 2018
+// Title:   Sequence Header
+// Purpose: The base class of DNA, RNA and Protein
+// Author:  Ahmed Nasr Eldardery, Belal Hamdy Ezzat, Adham Mamdouh Mohammed
+// Date:    13th December 2018
+// Version: 1.0
 #ifndef _SEQUENCE_H
 #define _SEQUENCE_H
 #include <vector>

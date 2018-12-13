@@ -1,3 +1,9 @@
+// Course:  CS213 - Programming II  - 2018
+// Title:   Protein Header
+// Purpose: Protein functions
+// Author:  Ahmed Nasr Eldardery, Belal Hamdy Ezzat, Adham Mamdouh Mohammed
+// Date:    13th December 2018
+// Version: 1.0
 #ifndef _PROTEIN_H
 #define _PROTEIN_H
 #include "Sequence.h"

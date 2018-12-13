@@ -1,3 +1,9 @@
+// Course:  CS213 - Programming II  - 2018
+// Title:   DNA Header
+// Purpose: DNA header include complementry strand
+// Author:  Ahmed Nasr Eldardery, Belal Hamdy Ezzat, Adham Mamdouh Mohammed
+// Date:    13th December 2018
+// Version: 1.0
 #ifndef _DNA_H
 #define _DNA_H
 #include "Sequence.h"

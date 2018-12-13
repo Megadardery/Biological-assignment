@@ -1,8 +1,15 @@
+// Course:  CS213 - Programming II  - 2018
+// Title:   Main
+// Purpose: Main menu and tests
+// Author:  Ahmed Nasr Eldardery, Belal Hamdy Ezzat, Adham Mamdouh Mohammed
+// Date:    13th December 2018
+// Version: 1.0
 #include <iostream>
 #include <vector>
 #include "RNA.h"
 #include "DNA.h"
 #include "Protein.h"
+
 typedef char mytype;
 using namespace std;
 const int STR_SIZE = 300;
@@ -21,32 +28,6 @@ void ProteinMenu(Protein<P>& curr);
 
 void getNum(int& n, int s, int e);
 
-/*
-enum DNAType
-{
-	Promoter,
-	Motif,
-	Tail,
-	Noncoding,
-	DNA_Unknown = -1
-};
-enum RNAType
-{
-	mRNA,
-	pre_mRNA,
-	mRNA_exon,
-	mRNA_intron,
-	RNA_Unknown = -1
-};
-enum ProteinType
-{
-	Hormon,
-	Enzyme,
-	TF,
-	Cellular_Function,
-	Protein_Unknown = -1
-};
-*/
 int main()
 {
 	DNA<mytype> dna;
@@ -54,6 +35,13 @@ int main()
 	Protein<mytype> protein;
 	int choice = 1;
 	cout << "Ahlan ya user ya 7abiby \n";
+	char codonfilename[100];
+	do {
+		cout << "Enter Codon Table filename:\n";
+		cin.getline(codonfilename, 100);
+	}//Keep looping until success, if fail, display an error message
+	while(!Codon::loadCodonsFromFile(codonfilename) && (cout << "Can't open file\n", 1));
+
 	while (choice)
 	{
 		cout << "3auz eh delw2ty\n1-DNA\n2-RNA\n3-Protein\n0-Exit\n";
@@ -80,7 +68,7 @@ template<typename D>
 void DNAMenu(DNA<D>& curr)
 {
 	RNA<D> changemenu;
-	char* filename;
+	char filename[300];
 	DNA<D> tmp;
 	while (true) {
 
@@ -103,7 +91,6 @@ void DNAMenu(DNA<D>& curr)
 			break;
 		case 4:
 			cout << "Enter the name of the file (don't forget the extension)\n";
-			cin.ignore(INT_MAX, '\n');
 			cin >> filename;
 			if (!curr.SaveSequenceToFile(filename))
 				cout << "Can't open file\n";
@@ -141,7 +128,7 @@ template<typename R>
 void RNAMenu(RNA<R>& curr)
 {
 	Protein<R> changemenu;
-	char* filename;
+	char filename[300];
 	RNA<R> tmp;
 	while (true) {
 
@@ -164,7 +151,6 @@ void RNAMenu(RNA<R>& curr)
 			break;
 		case 4:
 			cout << "Enter the name of the file (don't forget the extension)\n";
-			cin.ignore(INT_MAX, '\n');
 			cin.getline(filename, STR_SIZE);
 			if (!curr.SaveSequenceToFile(filename))
 				cout << "Can't open file\n";
@@ -197,7 +183,7 @@ void RNAMenu(RNA<R>& curr)
 template<typename P>
 void ProteinMenu(Protein<P>& curr)
 {
-	char* filename;
+	char filename[300];
 	DNA<P> longsequence;
 	vector <DNA<P>> resEncoding;
 	Protein<P> tmp;
@@ -221,7 +207,6 @@ void ProteinMenu(Protein<P>& curr)
 			break;
 		case 4:
 			cout << "Enter the name of the file (don't forget the extension)\n";
-			cin.ignore(INT_MAX, '\n');
 			cin.getline(filename, STR_SIZE);
 			if (!curr.SaveSequenceToFile(filename))
 				cout << "Can't open file\n";
