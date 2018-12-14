@@ -49,19 +49,18 @@ public:
 	virtual bool LoadSequenceFromFile(const char* filename) = 0;
 	virtual bool SaveSequenceToFile(const char* filename) const = 0;
 
-	std :: vector<T> alignWith(const Sequence<T>& other) ;
-
+	std :: vector<T> alignWith(const Sequence<T>& other) const;
+	T** NeedlemanWunschWith(const Sequence<T>& other, int gapScore = -1, int matchScore = 10, int mismatchScore = -2) const;
 	template<typename U>
-	friend T* alignSequences(const Sequence<U>& a, const Sequence<U>& b);
+	friend std ::vector<T> alignSequences(const Sequence<U>& a, const Sequence<U>& b);
 	virtual ~Sequence();
 protected:
 	int length;
 	T* strand;
 private:
 	const int MAX_ARRAY_SIZE = (int)2e6;
-	int** mem;
-	int getLCS(const T* s1, const T* s2, int i, int j);
-	void fillLCS(std::vector<T>& res, const T* s1, const T* s2, int i, int j);
+	int getLCS(const T* s1, const T* s2, int i, int j, int** mem) const;
+	void fillLCS(std::vector<T>& res, const T* s1, const T* s2, int i, int j, int** mem) const;
 };
 
 #endif

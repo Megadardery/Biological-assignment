@@ -6,6 +6,7 @@
 // Version: 1.0
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include "RNA.h"
 #include "DNA.h"
 #include "Protein.h"
@@ -14,8 +15,11 @@ typedef char mytype;
 using namespace std;
 const int STR_SIZE = 300;
 
-template<typename T>
-void Take_Sequence(T& curr);
+template<typename SEQ>
+void Take_Sequence(SEQ& curr);
+
+template<typename SEQ>
+void Align_Sequence(SEQ& curr);
 
 template<typename D>
 void DNAMenu(DNA<D>& curr);
@@ -101,9 +105,7 @@ void DNAMenu(DNA<D>& curr)
 			curr = curr + tmp;
 			break;
 		case 6:
-			Take_Sequence(tmp);
-			for (auto item : curr.alignWith(tmp)) cout << item << " ";
-			cout << "\n";
+			Align_Sequence(curr);
 			break;
 
 		case 7:
@@ -161,9 +163,7 @@ void RNAMenu(RNA<R>& curr)
 			curr = curr + tmp;
 			break;
 		case 6:
-			Take_Sequence(tmp);
-			for (auto item : curr.alignWith(tmp)) cout << item << " ";
-			cout << "\n";
+			Align_Sequence(curr);
 			break;
 
 		case 7:
@@ -217,9 +217,7 @@ void ProteinMenu(Protein<P>& curr)
 			curr = curr + tmp;
 			break;
 		case 6:
-			Take_Sequence(tmp);
-			for (auto item : curr.alignWith(tmp)) cout << item << " ";
-			cout << "\n";
+			Align_Sequence(curr);
 			break;
 
 		case 7:
@@ -236,17 +234,42 @@ void ProteinMenu(Protein<P>& curr)
 		}
 	}
 }
-template<typename T>
-void Take_Sequence(T& curr)
+template<typename SEQ>
+void Align_Sequence(SEQ& curr) {
+	SEQ tmp;
+	Take_Sequence(tmp);
+	int secondChoice;
+	cout << "1- Longest Common Subsequence\n2- Needleman Wunsch\n";
+	getNum(secondChoice, 1, 2);
+	switch (secondChoice)
+	{
+	case 1:
+		for (auto item : curr.alignWith(tmp)) cout << item << " ";
+		break;
+	case 2:
+		auto ret = curr.NeedlemanWunschWith(tmp);
+		int sz = tmp.getLength() + curr.getLength();
+		for (int i = 0; i < sz; i++) cout << ret[0][i] << " ";
+		cout << endl;
+		for (int i = 0; i < sz; i++) cout << ret[1][i] << " ";
+		delete[] ret[0];
+		delete[] ret[1];
+		delete[] ret;
+		break;
+	}
+	cout << "\n";
+}
+template<typename SEQ>
+void Take_Sequence(SEQ& curr)
 {
 	char filename[100];
 	int secondChoice;
-	cout << "Input format :\nLine 1 : TYPE\nLine 2 : SIZE\nLine 3 : DATA\n\n";
 	cout << "1- Enter from Console\n2- Enter from File\n";
 	getNum(secondChoice, 1, 2);
 	switch (secondChoice)
 	{
 	case 1:
+		cout << "Input format :\nLine 1 : TYPE\nLine 2 : SIZE\nLine 3 : DATA\n\n";
 		cin >> curr;
 		break;
 	case 2:
