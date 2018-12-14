@@ -55,7 +55,7 @@ void Protein::setStrand(std::string _strand)
 }
 bool Protein::LoadSequenceFromFile(char* filename)
 {
-	std::fstream file;
+	std::ifstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator>>(file, *this);
@@ -64,7 +64,7 @@ bool Protein::LoadSequenceFromFile(char* filename)
 }
 bool Protein::SaveSequenceToFile(char* filename) const
 {
-	std::fstream file;
+	std::ofstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator<<(file, *this);

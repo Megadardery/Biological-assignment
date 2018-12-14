@@ -56,7 +56,7 @@ std::string DNA::getTypeName() const
 }
 bool DNA::LoadSequenceFromFile(char* filename)
 {
-	std::fstream file;
+	std::ifstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator>>(file, *this);
@@ -65,7 +65,7 @@ bool DNA::LoadSequenceFromFile(char* filename)
 }
 bool DNA::SaveSequenceToFile(char* filename) const
 {
-	std::fstream file;
+	std::ofstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator<<(file, *this);

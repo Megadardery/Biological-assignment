@@ -48,22 +48,27 @@ int main()
 
 	while (choice)
 	{
-		cout << "3auz eh delw2ty\n1-DNA\n2-RNA\n3-Protein\n0-Exit\n";
-		getNum(choice, 0, 3);
-		switch (choice)
-		{
-		case 1:
-			DNAMenu<mytype>(dna);
-			break;
-		case 2:
-			RNAMenu<mytype>(rna);
-			break;
-		case 3:
-			ProteinMenu<mytype>(protein);
-			break;
-		default:
-			cout << "Bye Bye ya 2alby ^_^ \n";
-			return 0;
+		try {
+			cout << "Which sequence type would you like to work with?\n1-DNA\n2-RNA\n3-Protein\n0-Exit\n";
+			getNum(choice, 0, 3);
+			switch (choice)
+			{
+			case 1:
+				DNAMenu<mytype>(dna);
+				break;
+			case 2:
+				RNAMenu<mytype>(rna);
+				break;
+			case 3:
+				ProteinMenu<mytype>(protein);
+				break;
+			default:
+				cout << "Bye Bye ya 2alby ^_^ \n";
+				return 0;
+			}
+		}
+		catch (const exception& ex) {
+			cout << ex.what() << endl;
 		}
 	}
 	return 0;

@@ -83,7 +83,7 @@ Protein RNA::toProtein(ProteinType _type, int s) const
 }
 bool RNA::LoadSequenceFromFile(char* filename)
 {
-	std::fstream file;
+	std::ifstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator>>(file, *this);
@@ -92,7 +92,7 @@ bool RNA::LoadSequenceFromFile(char* filename)
 }
 bool RNA::SaveSequenceToFile(char* filename) const
 {
-	std::fstream file;
+	std::ofstream file;
 	file.open(filename);
 	if (!file.is_open()) return 0;
 	operator<<(file, *this);
