@@ -152,13 +152,13 @@ T** Sequence<T>::NeedlemanWunschWith(const Sequence<T>& other, int gapScore, int
 		int s = seq1[n - 1] == seq2[m - 1] ? matchScore : mismatchScore;
 
 
-		if (m > 0 && n > 0 && mem[n][m] == mem[n - 1][m - 1] + s)
+		if (mem[n][m] == mem[n - 1][m - 1] + s)
 		{
 			AlignmentA[sz] = seq1[n - 1];
 			AlignmentB[sz] = seq2[m - 1];
 			n--, m--;
 		}
-		else if (m > 0 && mem[n][m] == mem[n][m - 1] + gapScore)
+		else if (mem[n][m] == mem[n - 1][m] + gapScore)
 		{
 			AlignmentA[sz] = seq1[n - 1];
 			AlignmentB[sz] = '-';
